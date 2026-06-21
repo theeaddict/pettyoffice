@@ -1,0 +1,343 @@
+# PettyOffice.app
+
+> Paperwork for your emotional chaos.
+
+A parody productivity suite that generates absurd legal documents for everyday emotional grievances — suing your brain, ceasing your anxiety, terminating bad habits, and filing FOIA requests to the universe.
+
+## Features
+
+| Module | What it does | Document generated |
+|--------|-------------|-------------------|
+| **Sue Your Brain 🧠** | File criminal charges against your own brain | Formal court complaint |
+| **Cease & Desist Your Anxiety 🛑** | Demand your anxiety stop its infringing behavior | Legal Cease & Desist letter |
+| **Terminate a Habit 💼** | Issue a PIP and termination letter to a toxic habit | HR termination memo |
+| **FOIA Request to the Universe 📡** | Demand cosmic records and redacted bureaucratic nonsense | Freedom of Information Act request |
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| **Frontend** | Vanilla JS, Tailwind CSS v4 (PostCSS), Vite |
+| **Backend** | Node.js serverless functions (Vite dev / Vercel / Netlify) |
+| **Database** | Supabase (PostgreSQL with RLS) |
+| **AI** | NVIDIA Llama 3.1 70B via OpenAI-compatible API |
+| **Charts** | Chart.js |
+| **Deploy** | Static files + serverless functions |
+
+## Project Structure
+
+```
+pettyoffice/
+├── index.html                # Main application (single-page)
+├── api/
+│   ├── generate.js           # LLM generation endpoint (POST)
+│   ├── forms.js              # Public forms metadata API (GET)
+│   ├── share.js              # Create shareable case URL (POST)
+│   ├── stats.js              # Safe aggregated metrics (GET)
+│   ├── event.js              # Product analytics event logging (POST)
+│   ├── _supabase.js          # Server-side Supabase client
+│   ├── _jwt.js               # Minimal JWT helper (admin auth)
+│   ├── case/
+│   │   └── [id].js           # Load shared case by UUID (GET)
+│   └── admin/
+│       ├── login.js          # Admin login / JWT issuance (POST)
+│       └── forms.js          # Admin CRUD API (GET/POST/PUT/DELETE)
+├── admin/
+│   └── index.html            # Admin dashboard
+├── src/
+│   ├── style.css             # Tailwind v4 entry point
+│   ├── admin.js              # Admin dashboard logic
+│   ├── stats.js              # Public metrics client
+│   └── milestones.js         # Milestone celebration system
+├── supabase/
+│   └── migration.sql         # forms_metadata table + seed data
+├── schema.sql                # full schema + indexes + RLS
+├── supabase.js               # Client-side Supabase (noop when unconfigured)
+├── tracking.js               # Visitor/generation tracking
+├── vercel.json               # SPA rewrites for /case/:id and /admin
+├── postcss.config.js         # PostCSS with Tailwind
+├── vite.config.js            # Multi-page build (main + admin)
+├── dev-server.js             # Local API dev server (auto-started by Vite)
+└── .env.example              # Required environment variables
+```
+
+## Quick Start
+
+```bash
+npm install
+npm run dev
+```
+
+The Vite dev server starts on `http://localhost:5173` and automatically spawns the API dev server (`dev-server.js`) on port 3001. All `/api/` requests are proxied to it — no separate terminal needed.
+
+To run the API server standalone (e.g., for debugging):
+```bash
+node dev-server.js
+```
+
+### Build for production
+
+```bash
+npm run build   # outputs to dist/
+npm run preview # preview the build locally
+```
+
+## Environment Variables
+
+Copy `.env.example` to `.env` and configure:
+
+| Variable | Required | Purpose |
+|----------|----------|---------|
+| `VITE_SUPABASE_URL` | No | Supabase project URL (anon client) |
+| `VITE_SUPABASE_ANON_KEY` | No | Supabase anon key (browser-safe) |
+| `SUPABASE_URL` | No | Supabase URL (server-side) |
+| `SUPABASE_SERVICE_ROLE_KEY` | No | Service role key (admin API, never exposed) |
+| `LLM_API_KEY` | Yes | NVIDIA/OpenAI API key for AI generation |
+| `LLM_ENDPOINT` | No | Custom endpoint (default: NVIDIA) |
+| `LLM_MODEL` | No | Model name (default: `meta/llama-3.1-70b-instruct`) |
+| `ALLOWED_ORIGINS` | No | CORS origins (comma-separated, `*` for dev) |
+| `ADMIN_PASSWORD` | No | Admin dashboard password (server-side only) |
+| `ADMIN_JWT_SECRET` | No | Secret for signing admin JWTs (min 32 chars) |
+
+> ⚠️ **Never** use a `VITE_` prefix for `ADMIN_PASSWORD` or any secret. Vite bundles `VITE_*` variables into the client build.
+
+## API Endpoints
+
+### `POST /api/generate`
+
+Generate a document via LLM with fallback template and response caching.
+
+**Request:**
+```json
+{
+  "module_type": "sue_brain",
+  "primary_selection": "Alice",
+  "secondary_selection": "overthinking at 3 AM",
+  "user_currency": "KSh",
+  "device": "desktop",
+  "country": "US"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "module_type": "sue_brain",
+  "data": { ... },
+  "source": "ai"
+}
+```
+
+- `source: "ai"` — generated by LLM
+- `source: "cache"` — returned from `llm_cache` (identical inputs within 24h)
+- `source: "fallback"` — LLM unavailable, used template
+- `module_type` must be one of `sue_brain`, `cease_anxiety`, `breakup_habit`, `cosmic`
+- Rate-limited to 20 req/min per IP (Supabase-backed, with in-memory dev fallback)
+- Body capped at 10 KB, inputs at 500 chars
+- Every request is tracked in the `generations` table
+
+### `GET /api/forms`
+
+Public endpoint. Returns active `forms_metadata` rows.
+
+### `POST /api/admin/login`
+
+Authenticates with `ADMIN_PASSWORD` and returns a 24-hour JWT.
+
+### `GET/POST/PUT/DELETE /api/admin/forms`
+
+Admin CRUD for `forms_metadata`. Requires `Authorization: Bearer <JWT from /api/admin/login>`.
+
+### `POST /api/share`
+
+Stores a generated document and returns a shareable URL.
+
+```json
+{
+  "module_type": "sue_brain",
+  "primary_selection": "Alice",
+  "secondary_selection": "overthinking at 3 AM",
+  "document_content": "<html>..."
+}
+```
+
+**Response:** `{ "success": true, "share_url": "/case/<uuid>" }`
+
+### `GET /api/case/:id`
+
+Returns a shared document and increments `view_count`.
+
+### `GET /api/stats`
+
+Returns aggregated metrics safely (no raw rows):
+
+```json
+{
+  "success": true,
+  "total": 1234,
+  "today": 42,
+  "week": 150,
+  "toolCounts": { "sue_brain": 500, ... },
+  "countryCount": 67,
+  "topCountries": [{ "country": "US", "count": 300 }, ...],
+  "devices": { "mobile": 400, "desktop": 834 },
+  "visitors": 2100,
+  "dailyTrend": [{ "date": "2024-01-01", "count": 10 }, ...]
+}
+```
+
+### `POST /api/event`
+
+Logs a product event. Currently supports `premium_interest`.
+
+## Database
+
+### Tables
+
+| Table | Purpose |
+|-------|---------|
+| `generations` | Document generation events |
+| `visitors` | Page visits |
+| `forms_metadata` | Dynamic tile engine for homepage |
+| `rate_limits` | Per-IP request rate limiting (serverless-safe) |
+| `shared_documents` | Shareable case documents |
+| `llm_cache` | LLM response cache for duplicate inputs |
+
+### Indexes
+
+- `idx_generations_tool`, `idx_generations_created_at`, `idx_generations_country`
+- `idx_visitors_page`, `idx_visitors_created_at`, `idx_visitors_device`
+- `idx_forms_metadata_active`
+- `idx_rate_limits_window`
+- `idx_shared_documents_created`
+- `idx_llm_cache_created`
+
+### RLS Policies
+
+- **generations**: anon INSERT only; reads via `service_role` only (`/api/stats`)
+- **visitors**: anon INSERT only
+- **forms_metadata**: public SELECT on `is_active = true`, admin bypasses via service_role
+- **rate_limits / shared_documents / llm_cache**: service_role only
+
+### Cleanup Queries
+
+Run periodically (e.g., nightly Supabase cron or manual):
+
+```sql
+-- Rate limits older than 24 hours
+DELETE FROM rate_limits WHERE window_start < NOW() - INTERVAL '24 hours';
+
+-- LLM cache older than 7 days
+DELETE FROM llm_cache WHERE created_at < NOW() - INTERVAL '7 days';
+```
+
+### Seed Data
+
+`supabase/migration.sql` includes:
+- 4 primary module tiles
+- 6 Sue Your Brain options
+- 6 Cease & Desist Your Anxiety options
+- 3 Terminate a Habit options
+- 5 FOIA Request to the Universe options
+
+## Admin Panel
+
+Visit `/admin` and enter `ADMIN_PASSWORD`. The dashboard receives a JWT stored in `sessionStorage` (not persisted across sessions).
+
+- **Overview cards**: total documents, today, this week, visitors
+- **Charts**: per-tool bar chart, 30-day line chart, mobile/desktop doughnut
+- **Countries table**: top 15 countries with generation counts
+- **Activity feed**: aggregated tool activity (no raw rows exposed)
+- **Forms Management**: create, toggle active/inactive, edit, and delete `forms_metadata` rows
+
+## Document Output
+
+Documents render as shareable cards (`#shareable-card`) optimized for screenshots and sharing:
+
+- **Base canvas**: bone-white (`#FAFAFA`), rounded-2xl, prominent shadow
+- **Typography**: charcoal-black (`#0A0A0C`) headers, crimson (`#BE185D`) section labels
+- **Stamps**: "CASE FILED", "SERVED", "TERMINATED", "FILED" badges with perforated-ring effect
+- **Footer**: `📁 GENERATED VIA PETTYOFFICE.APP` watermark
+- **Shareable URLs**: every document can be saved to `shared_documents` and shared via `/case/:id`
+
+## Monetization
+
+PettyOffice includes a lightweight tip jar and premium-stamp teaser:
+
+- **"Buy the Judge Coffee"** buttons link to a Buy Me a Coffee page:
+  - $2 — Basic Filing Fee
+  - $5 — Expedited Processing
+  - $10 — Bribe the Jury
+- **Premium Stamps**: free users get the "CASE FILED" stamp. Locked stamps include:
+  - "DISMISSED WITH PREJUDICE"
+  - "CONTEMPT OF COURT"
+  - "APPEAL DENIED"
+  - Hover tooltip: "Unlock all stamps for $5 — one-time filing fee"
+- **Premium interest clicks** are tracked via `POST /api/event` into the `generations` table (`tool='premium_interest'`).
+
+Payment processing is not yet implemented; only the UI placeholder and click tracking are wired up.
+
+## Security
+
+- Admin password is **never** bundled into the client build (use `ADMIN_PASSWORD`, not `VITE_ADMIN_PASSWORD`)
+- Admin authentication uses JWT signed with `ADMIN_JWT_SECRET` and stored in `sessionStorage`
+- Rate limiting: 20 req/min per IP via Supabase `rate_limits` table (in-memory fallback for local dev)
+- CORS: restricted to `ALLOWED_ORIGINS` env var
+- Body size: 10 KB max (50 KB for `/api/share`)
+- Input sanitization: control chars stripped, 500 char max
+- Security headers: CSP, HSTS, XFO, nosniff, Referrer-Policy
+- No sensitive error details leaked to client
+- API keys from environment only — never logged or exposed
+- `generations` table no longer allows anonymous SELECT; public metrics use `/api/stats`
+
+## Deployment
+
+### Vercel
+
+1. Connect repo to Vercel
+2. Set all env vars in Vercel dashboard
+3. Vercel auto-detects `api/` as serverless functions
+4. `vercel.json` handles `/case/:id` SPA routing and `/admin`
+5. Deploy — no additional config needed
+
+### Netlify
+
+1. Connect repo to Netlify
+2. Build command: `npm run build`
+3. Publish directory: `dist`
+4. Add redirect rules for `/case/:id` → `/index.html` and `/admin` → `/admin/index.html`
+5. Set all env vars in Netlify dashboard
+6. Functions in `api/` are auto-detected (Netlify may require adjusting dynamic route syntax)
+
+## Architecture Notes
+
+- **No framework**: Vanilla JS keeps the bundle small
+- **Dual-mode Supabase**: client-side (anon key, RLS) vs server-side (service_role key, admin API)
+- **Dynamic tile engine**: homepage tiles load from DB, admin can CRUD without code changes
+- **Serverless-safe rate limiting**: `rate_limits` table persists across cold starts
+- **LLM response cache**: identical inputs reuse cached responses for 24 hours, reducing API spend
+- **Fallback architecture**: only the backend generates fallback templates; the frontend never does
+- **Case history**: client-side `localStorage` docket for retention and re-rendering
+- **Shareable URLs**: documents stored in `shared_documents` with OpenGraph meta tags updated client-side
+
+## Changelog
+
+### v1.1
+- **Security**: replaced `VITE_ADMIN_PASSWORD` with server-side JWT auth (`/api/admin/login`)
+- **Product**: replaced "Invoice Your Ex" with "Cease & Desist Your Anxiety"
+- **Product**: renamed "Fire a Habit" → "Terminate a Habit" (HR/corporate theme)
+- **Product**: reframed "Manifest Something" → "FOIA Request to the Universe"
+- **Security**: moved rate limiting to Supabase `rate_limits` table
+- **Architecture**: removed all frontend document generation; backend always handles fallback
+- **Product**: added case history / "My Docket" panel
+- **Product**: added shareable URLs via `shared_documents`
+- **Technical**: added LLM response cache (`llm_cache`) and database indexes
+- **Security**: removed anonymous `SELECT` on `generations`; added `/api/stats`
+- **Monetization**: added tip jar and premium-stamp teaser with click tracking
+- **Docs**: updated README, schema, and migration
+
+## License
+
+MIT — use responsibly. PettyOffice is a parody. Do not use generated documents for actual legal proceedings.
+# pettyoffice
