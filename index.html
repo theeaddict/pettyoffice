@@ -1,0 +1,2200 @@
+<!doctype html>
+<html lang="en" class="h-full bg-[#FAF9F5]">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">PettyOffice.app — The Parody Productivity Suite</title>
+    <meta id="og-title" property="og:title" content="PettyOffice.app — The Parody Productivity Suite">
+    <meta id="og-description" property="og:description" content="Paperwork for your emotional chaos. Generate absurd legal documents for everyday grievances.">
+    <meta id="og-url" property="og:url" content="https://pettyoffice.app">
+    <meta id="og-image" property="og:image" content="https://pettyoffice.app/og-default.png">
+    <meta id="twitter-card" property="twitter:card" content="summary_large_image">
+    <link rel="stylesheet" href="/src/style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        .mesh-bg {
+            background-color: var(--color-background);
+        }
+        .metric-value {
+            min-width: 2.5rem;
+            text-align: right;
+            transition: color 0.3s;
+            font-variant-numeric: tabular-nums;
+        }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+        .cursor-blink { animation: blink 1s step-end infinite; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.15); border-radius: 2px; }
+
+        .docket-folder {
+            background: #F5E6C8;
+            border: 1px solid #E6D5AA;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.4);
+        }
+        .docket-tab {
+            background: #EBD8A8;
+            border: 1px solid #E6D5AA;
+            border-bottom: none;
+            border-radius: 8px 8px 0 0;
+        }
+        .card-stage {
+            background: radial-gradient(ellipse at 50% 35%, rgba(245,220,200,0.25) 0%, transparent 60%),
+                        radial-gradient(ellipse at 50% 80%, rgba(255,245,235,0.4) 0%, transparent 50%);
+            padding: 24px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 28px;
+        }
+        .shareable-card {
+            background: #FAFAFA;
+            border-radius: 24px;
+            box-shadow: 0 24px 64px rgba(0,0,0,0.12), 0 8px 24px rgba(0,0,0,0.06);
+            width: 380px;
+            min-height: 480px;
+            display: flex;
+            flex-direction: column;
+            padding: 32px;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Lato', sans-serif;
+            color: #0A0A0C;
+        }
+        .shareable-card .section-label {
+            color: #BE185D;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-size: 9.5px;
+            margin-bottom: 4px;
+        }
+        .shareable-card .divider {
+            height: 1px;
+            background: rgba(10,10,12,0.07);
+            width: 100%;
+            margin: 10px 0;
+            flex-shrink: 0;
+        }
+        .shareable-card .footer-mark {
+            margin-top: auto;
+            padding-top: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 9px;
+            font-weight: 700;
+            color: rgba(10,10,12,0.3);
+            font-family: 'EB Garamond', serif;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            flex-shrink: 0;
+            position: relative;
+        }
+        .shareable-card .footer-mark::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -8px;
+            right: -8px;
+            height: 1px;
+            background: repeating-linear-gradient(
+                90deg,
+                rgba(10,10,12,0.12) 0px,
+                rgba(10,10,12,0.12) 6px,
+                transparent 6px,
+                transparent 10px
+            );
+        }
+        .shareable-card .stamp {
+            border: 3px solid #BE185D;
+            color: #BE185D;
+            background: rgba(255, 241, 242, 0.88);
+            font-weight: 950;
+            font-family: 'EB Garamond', serif;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            font-size: 15px;
+            padding: 6px 22px;
+            pointer-events: none;
+            user-select: none;
+            position: absolute;
+            z-index: 10;
+            box-shadow: 0 0 0 1px rgba(190,24,93,0.12), inset 0 0 0 1px rgba(190,24,93,0.06);
+            filter: contrast(0.88) saturate(0.78);
+        }
+        .shareable-card .stamp-ring {
+            position: absolute;
+            inset: -6px;
+            border: 1.5px dashed rgba(190,24,93,0.25);
+            border-radius: 6px;
+            pointer-events: none;
+        }
+        .shareable-card .stamp.stamp-contempt {
+            border-color: #1a1a2e;
+            color: #1a1a2e;
+            background: rgba(230,230,245,0.88);
+            box-shadow: 0 0 0 1px rgba(26,26,46,0.12), inset 0 0 0 1px rgba(26,26,46,0.06);
+        }
+        .shareable-card .stamp.stamp-contempt .stamp-ring {
+            border-color: rgba(26,26,46,0.25);
+        }
+        .shareable-card .stamp.stamp-dismissed {
+            border-color: #1a8a4a;
+            color: #1a8a4a;
+            background: rgba(230,250,240,0.90);
+            box-shadow: 0 0 0 1px rgba(26,138,74,0.15), inset 0 0 0 1px rgba(26,138,74,0.08);
+        }
+        .shareable-card .stamp.stamp-dismissed .stamp-ring {
+            border-color: rgba(26,138,74,0.30);
+        }
+        .shareable-card .stamp.stamp-mistrial {
+            border-color: #b8860b;
+            color: #b8860b;
+            background: rgba(255,248,225,0.90);
+            box-shadow: 0 0 0 1px rgba(184,134,11,0.15), inset 0 0 0 1px rgba(184,134,11,0.08);
+        }
+        .shareable-card .stamp.stamp-mistrial .stamp-ring {
+            border-color: rgba(184,134,11,0.30);
+        }
+        .renderer-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(10,10,12,0.07);
+        }
+        .renderer-toolbar button {
+            font-family: 'EB Garamond', serif;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #0A0A0C;
+            padding: 6px 12px;
+            border-radius: 8px;
+            transition: background 0.15s;
+        }
+        .renderer-toolbar button:hover {
+            background: rgba(10,10,12,0.05);
+        }
+        @media (max-width: 440px) {
+            .shareable-card {
+                width: 100%;
+                border-radius: 16px;
+                padding: 20px;
+                min-height: auto;
+            }
+            .shareable-card .stamp {
+                font-size: 13px;
+                padding: 4px 16px;
+            }
+            .card-stage {
+                padding: 12px 0;
+            }
+        }
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(120%);
+            background: #0A0A0C;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-family: 'EB Garamond', serif;
+            font-size: 11px;
+            z-index: 9999;
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            pointer-events: none;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+
+        .debate-speech {
+            position: relative;
+            background: #fff;
+            border: 2px solid #0A0A0C;
+            border-radius: 16px;
+            padding: 16px;
+        }
+        .debate-speech::before {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 32px;
+            width: 16px;
+            height: 16px;
+            background: #fff;
+            border-right: 2px solid #0A0A0C;
+            border-bottom: 2px solid #0A0A0C;
+            transform: rotate(45deg);
+        }
+        .debate-input {
+            border: 2px solid #0A0A0C;
+            border-radius: 14px;
+            padding: 12px 16px;
+            font-size: 14px;
+            width: 100%;
+            outline: none;
+            transition: border-color 0.15s;
+            resize: none;
+            font-family: 'Lato', sans-serif;
+        }
+        .debate-input:focus { border-color: #BE185D; }
+        .debate-input:disabled { opacity: 0.5; cursor: not-allowed; }
+        .judge-gavel {
+            width: 48px;
+            height: 48px;
+            border-radius: 999px;
+            background: #0A0A0C;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body class="min-h-screen w-full mesh-bg font-sans antialiased text-neutral-900 flex items-center justify-center p-4 md:p-12 overflow-x-hidden overflow-y-auto">
+
+    <div id="app-container" class="w-full max-w-5xl bg-[var(--color-background)] rounded-2xl border border-[var(--color-border)] shadow-xl p-6 md:p-10 flex flex-col relative min-h-[480px] md:min-h-[560px]">
+
+        <!-- ================= HOME VIEW ================= -->
+        <div id="view-home" class="flex flex-col justify-between space-y-8">
+            <div class="flex flex-col md:flex-row md:items-start md:justify-between space-y-4 md:space-y-0 border-b border-neutral-900/5 pb-6">
+                <div class="space-y-2">
+                    <div class="flex items-center space-x-3">
+                        <span class="text-2xl font-black tracking-tight text-neutral-950 font-mono">pettyoffice</span>
+                        <span class="font-mono text-xs font-bold uppercase tracking-wider bg-neutral-950 text-white px-2.5 py-0.5 rounded">SYSTEM</span>
+                    </div>
+                    <h1 class="text-xl md:text-2xl font-extrabold tracking-tight text-neutral-950">
+                        paperwork for your emotional chaos.
+                    </h1>
+                    <p class="text-sm text-neutral-800 font-medium max-w-2xl leading-relaxed">
+                        sue your brain, invoice your ex, break up with a bad habit, or sign a universe contract.
+                    </p>
+                </div>
+                <div class="flex items-center space-x-2 bg-white/80 border border-neutral-900/10 px-3 py-1.5 rounded-full self-start shadow-sm shrink-0">
+                    <span class="text-sm"><svg class="w-5 h-5 inline text-slate-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg></span>
+                    <span class="font-mono text-xs font-bold text-neutral-950 uppercase tracking-wider">build 001</span>
+                </div>
+            </div>
+
+            <div id="tiles-container" class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                <div class="lg:col-span-6" id="hero-tile-slot">
+                    <div class="w-full text-left bg-white border-2 border-neutral-200 p-6 rounded-3xl animate-pulse">
+                        <div class="h-4 bg-neutral-200 rounded w-1/3 mb-3"></div>
+                        <div class="h-6 bg-neutral-200 rounded w-2/3 mb-2"></div>
+                        <div class="h-4 bg-neutral-200 rounded w-1/2"></div>
+                    </div>
+                </div>
+                <div class="lg:col-span-6 space-y-3" id="secondary-tiles-slot">
+                    <span class="font-mono text-xs font-bold text-neutral-500 tracking-wider uppercase px-1 block">loading...</span>
+                    <div class="w-full h-12 bg-white/40 rounded-2xl animate-pulse"></div>
+                    <div class="w-full h-12 bg-white/40 rounded-2xl animate-pulse"></div>
+                    <div class="w-full h-12 bg-white/40 rounded-2xl animate-pulse"></div>
+                </div>
+            </div>
+
+            <div class="border-t border-neutral-950/10 pt-6 space-y-4">
+                <div class="flex items-center justify-between font-mono text-xs font-bold text-neutral-900">
+                    <span class="text-neutral-950"><svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg> live stats</span>
+                    <span id="metrics-update-time" class="text-neutral-600">...</span>
+                </div>
+                <div id="metrics-grid" class="space-y-1.5">
+                    <div class="text-xs font-mono text-neutral-700 text-center py-2">fetching numbers...</div>
+                </div>
+                <div id="metrics-summary" class="space-y-1">
+                    <div class="text-xs font-mono text-neutral-700 text-center py-1">gathering...</div>
+                </div>
+                <footer class="border-t border-neutral-900/5 pt-3 flex flex-col sm:flex-row items-center justify-between font-mono text-xs font-bold text-neutral-500 space-y-2 sm:space-y-0">
+                    <span class="text-neutral-950"><svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg> PETTYOFFICE v1.1</span>
+                    <span class="text-neutral-800"><svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> 94.2% uptime · 4,921 peers</span>
+                </footer>
+            </div>
+        </div>
+
+        <!-- ================= INPUT VIEW: SUE YOUR BRAIN ================= -->
+        <div id="view-input-lawsuit" class="hidden flex flex-col space-y-6">
+            <div class="flex items-center justify-between border-b border-neutral-900/5 pb-4">
+                <button class="back-to-home flex items-center space-x-2 text-sm font-bold text-neutral-950 hover:text-neutral-700 transition">
+                    <span>←</span>
+                    <span class="font-mono text-xs uppercase tracking-wider">back</span>
+                </button>
+                <span class="font-mono text-xs font-bold text-neutral-500 uppercase tracking-wider">sue / complaint_config</span>
+            </div>
+            <div class="space-y-5">
+                <div>
+                    <label class="block text-xs font-bold font-mono text-neutral-950 uppercase tracking-wider mb-1.5">plaintiff name</label>
+                    <input type="text" id="lawsuit-name-input" class="input" placeholder="type your name here..." />
+                </div>
+                <div>
+                    <label class="block text-xs font-bold font-mono text-neutral-950 uppercase tracking-wider mb-1.5">what's your brain doing rn</label>
+                    <input type="text" id="lawsuit-input" class="input" placeholder="go off..." />
+                    <p class="text-[10px] font-mono text-neutral-500 mt-1.5">describe the crime. we'll turn it into formal charges.</p>
+                </div>
+                <div id="lawsuit-quick-picks" class="space-y-2 hidden">
+                    <p class="text-[10px] font-bold font-mono text-neutral-500 uppercase tracking-wider">or pick a common grievance ⚡</p>
+                    <div id="lawsuit-quick-options" class="flex flex-col space-y-1.5"></div>
+                </div>
+                <button id="generate-lawsuit-btn" class="btn-primary" disabled>
+                    <span class="mr-2">⬤</span> execute suit
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= INPUT VIEW: INVOICE YOUR EX ================= -->
+        <div id="view-input-invoice" class="hidden flex flex-col space-y-6">
+            <div class="flex items-center justify-between border-b border-neutral-900/5 pb-4">
+                <button class="back-to-home flex items-center space-x-2 text-sm font-bold text-neutral-950 hover:text-neutral-700 transition">
+                    <span>←</span>
+                    <span class="font-mono text-xs uppercase tracking-wider">back</span>
+                </button>
+                <span class="font-mono text-xs font-bold text-neutral-500 uppercase tracking-wider">invoice / bill</span>
+            </div>
+            <div class="space-y-5">
+                <div>
+                    <label class="block text-xs font-bold font-mono text-neutral-950 uppercase tracking-wider mb-1.5">ex's name</label>
+                    <input type="text" id="invoice-primary-input" class="input" placeholder="e.g., Alex, Jordan..." />
+                </div>
+                <div>
+                    <label class="block text-xs font-bold font-mono text-neutral-950 uppercase tracking-wider mb-1.5">main grievance</label>
+                    <input type="text" id="invoice-secondary-input" class="input" placeholder="e.g., wasted 3 years, listened to terrible podcast idea..." />
+                    <p class="text-[10px] font-mono text-neutral-500 mt-1.5">we'll draft a formal invoice charging them for emotional labor.</p>
+                </div>
+                <div id="invoice-quick-picks" class="space-y-2 hidden">
+                    <p class="text-[10px] font-bold font-mono text-neutral-500 uppercase tracking-wider">or pick a common grievance <svg class="w-5 h-5 inline text-slate-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></p>
+                    <div id="invoice-quick-options" class="flex flex-col space-y-1.5"></div>
+                </div>
+                <button id="generate-invoice-btn" class="btn-primary" disabled>
+                    <span class="mr-2">⬤</span> generate invoice
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= INPUT VIEW: TERMINATE A HABIT ================= -->
+        <div id="view-input-hr" class="hidden flex flex-col space-y-6">
+            <div class="flex items-center justify-between border-b border-neutral-900/5 pb-4">
+                <button class="back-to-home flex items-center space-x-2 text-sm font-bold text-neutral-950 hover:text-neutral-700 transition">
+                    <span>←</span>
+                    <span class="font-mono text-xs uppercase tracking-wider">back</span>
+                </button>
+                <span class="font-mono text-xs font-bold text-neutral-500 uppercase tracking-wider">hr / termination_papers</span>
+            </div>
+            <div class="space-y-5">
+                <div>
+                    <label class="block text-xs font-bold font-mono text-neutral-950 uppercase tracking-wider mb-1.5">what habit are you terminating</label>
+                    <input type="text" id="habit-input" class="input" placeholder="doomscrolling, impulse buying, late-night snacking..." />
+                    <p class="text-[10px] font-mono text-neutral-500 mt-1.5">we'll draft a formal PIP and termination letter. effective immediately.</p>
+                </div>
+                <div id="habit-quick-picks" class="space-y-2 hidden">
+                    <p class="text-[10px] font-bold font-mono text-neutral-500 uppercase tracking-wider">common terminations <svg class="w-5 h-5 inline text-slate-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg></p>
+                    <div id="habit-quick-options" class="flex flex-col space-y-1.5"></div>
+                </div>
+                <button id="generate-hr-btn" class="btn-primary" disabled>
+                    <span class="mr-2">⬤</span> terminate habit
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= INPUT VIEW: FOIA REQUEST TO THE UNIVERSE ================= -->
+        <div id="view-input-cosmic" class="hidden flex flex-col space-y-6">
+            <div class="flex items-center justify-between border-b border-neutral-900/5 pb-4">
+                <button class="back-to-home flex items-center space-x-2 text-sm font-bold text-neutral-950 hover:text-neutral-700 transition">
+                    <span>←</span>
+                    <span class="font-mono text-xs uppercase tracking-wider">back</span>
+                </button>
+                <span class="font-mono text-xs font-bold text-neutral-500 uppercase tracking-wider">foia / cosmic_records</span>
+            </div>
+            <div class="space-y-5">
+                <div>
+                    <label class="block text-xs font-bold font-mono text-neutral-950 uppercase tracking-wider mb-1.5">what information do you seek</label>
+                    <input type="text" id="cosmic-primary-input" class="input" placeholder="e.g., why I am still single, why my crypto tanked..." />
+                </div>
+                <div>
+                    <label class="block text-xs font-bold font-mono text-neutral-950 uppercase tracking-wider mb-1.5">reason for request</label>
+                    <select id="cosmic-reason-select" class="w-full text-sm bg-white border-2 border-neutral-200 focus:border-neutral-950 outline-none rounded-xl p-3 text-neutral-900 transition">
+                        <option value="">select a reason...</option>
+                        <option value="Journalism">Journalism</option>
+                        <option value="Personal curiosity">Personal curiosity</option>
+                        <option value="Existential audit">Existential audit</option>
+                        <option value="Academic research">Academic research</option>
+                    </select>
+                </div>
+                <div id="cosmic-quick-picks" class="space-y-2 hidden">
+                    <p class="text-[10px] font-bold font-mono text-neutral-500 uppercase tracking-wider">popular requests <svg class="w-5 h-5 inline text-slate-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.906 14.142 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"></path></svg></p>
+                    <div id="cosmic-quick-options" class="flex flex-col space-y-1.5"></div>
+                </div>
+                <button id="generate-cosmic-btn" class="btn-primary" disabled>
+                    <span class="mr-2">⬤</span> file foia request
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= TERMINAL LOADING VIEW ================= -->
+        <div id="view-loading" class="hidden flex-col justify-center items-center space-y-5 py-10">
+            <div class="w-full max-w-lg bg-white/90 border-2 border-neutral-200 rounded-2xl p-5 font-mono text-sm space-y-2 min-h-[200px] flex flex-col shadow-inner">
+                <div id="terminal-logs" class="flex-1 space-y-1.5">
+                    <p class="text-neutral-500">&gt; initializing corporate compliance engine...</p>
+                </div>
+                <div class="flex items-center space-x-1.5 shrink-0 pt-2 border-t border-neutral-100">
+                    <span class="text-neutral-950 font-bold">$</span>
+                    <span class="w-2 h-4 bg-neutral-950 cursor-blink inline-block"></span>
+                </div>
+            </div>
+            <p class="text-xs font-mono text-neutral-500 text-center italic">compiling your document. this is 100% serious corporate paperwork.</p>
+        </div>
+
+        <!-- ================= DEBATE VIEW (Sue Your Brain interactive) ================= -->
+        <div id="view-debate" class="hidden flex flex-col space-y-5">
+            <div class="flex items-center justify-between border-b border-neutral-900/5 pb-4">
+                <button id="debate-back-btn" class="flex items-center space-x-2 text-sm font-bold text-neutral-950 hover:text-neutral-700 transition">
+                    <span>←</span>
+                    <span class="font-mono text-xs uppercase tracking-wider">back</span>
+                </button>
+                <span id="debate-case-ref" class="font-mono text-xs font-bold text-neutral-500 uppercase tracking-wider">case no. ---</span>
+            </div>
+
+            <div class="text-center space-y-1">
+                <h2 id="debate-court-name" class="text-lg font-black uppercase tracking-tight text-neutral-950"></h2>
+                <p id="debate-parties" class="text-xs font-mono text-neutral-600"></p>
+            </div>
+
+            <div id="debate-round-indicator" class="flex items-center justify-center space-x-2">
+                <span class="text-[10px] font-mono font-bold text-neutral-500 uppercase tracking-wider">round</span>
+                <span id="debate-round-num" class="text-sm font-black text-neutral-950">1</span>
+                <span class="text-[10px] font-mono text-neutral-400">of</span>
+                <span id="debate-round-total" class="text-sm font-black text-neutral-950">2</span>
+            </div>
+
+            <div id="debate-brain-section" class="space-y-2">
+                <div class="flex items-center space-x-2">
+                    <span class="text-xs font-bold font-mono uppercase tracking-wider text-neutral-950">🧠 the brain pleads</span>
+                </div>
+                <div id="debate-defense-text" class="debate-speech text-sm leading-relaxed text-neutral-900">
+                    The brain is preparing its defense...
+                </div>
+            </div>
+
+            <div id="debate-reply-section" class="space-y-2">
+                <div class="flex items-center space-x-2">
+                    <span class="text-xs font-bold font-mono uppercase tracking-wider text-neutral-950">✋ your objection</span>
+                    <span id="debate-reply-word-count" class="text-[10px] font-mono text-neutral-400"></span>
+                </div>
+                <textarea id="debate-reply-input" class="debate-input" rows="2" placeholder="object! the brain is lying, i went to bed at 10pm..."></textarea>
+                <div class="flex justify-between items-center">
+                    <p class="text-[10px] font-mono text-neutral-500 italic">object to the brain's defense</p>
+                    <button id="debate-submit-btn" class="px-6 py-2 rounded-xl bg-neutral-950 text-white font-mono text-xs font-bold uppercase tracking-wider hover:bg-neutral-800 transition disabled:opacity-30 disabled:cursor-not-allowed" disabled>
+                        object! →
+                    </button>
+                </div>
+            </div>
+
+            <div id="debate-bribe-section" class="hidden space-y-4">
+                <div class="text-center py-6 border-t border-b border-neutral-900/5">
+                    <span class="text-3xl mb-2 block">⏳</span>
+                    <h3 class="text-xs font-bold font-mono text-neutral-500 uppercase tracking-widest mb-2">the judge is deliberating...</h3>
+                    <p class="text-lg font-black text-neutral-950 uppercase tracking-tight mb-4">You can bribe the judge now.</p>
+                    <div class="grid grid-cols-2 gap-3 mb-4">
+                        <a href="https://ko-fi.com/pettyoffice" target="_blank" rel="noopener" class="btn-secondary flex items-center justify-center space-x-1.5 p-2 h-auto">
+                            <span class="text-base">☕</span>
+                            <span class="text-[10px] font-bold">Buy me Ko-fi</span>
+                        </a>
+                        <a href="https://buymesoda.com/FgUD5yWsatMr6Xyhm0gou6nyhwa2" target="_blank" rel="noopener" class="btn-secondary flex items-center justify-center space-x-1.5 p-2 h-auto">
+                            <span class="text-base">🥤</span>
+                            <span class="text-[10px] font-bold">Buy me Soda (KE)</span>
+                        </a>
+                    </div>
+                    <div class="bg-rose-50 border border-rose-200 rounded-lg p-3 mb-4">
+                        <p class="text-[10px] font-mono font-bold text-rose-700 leading-relaxed uppercase tracking-wide">
+                            * Note: The judge is highly corrupt, but a bribe still does not guarantee a win *
+                        </p>
+                    </div>
+                    <button id="debate-reveal-verdict-btn" class="btn-primary w-full">
+                        hear the verdict →
+                    </button>
+                </div>
+            </div>
+
+            <div id="debate-verdict-section" class="hidden space-y-4">
+                <div class="judge-gavel">
+                    <span class="text-white text-xl">⚖️</span>
+                </div>
+                <div class="text-center space-y-2">
+                    <p class="text-[10px] font-mono font-bold text-neutral-500 uppercase tracking-wider">the judge rules</p>
+                    <p id="debate-verdict-text" class="text-2xl font-black text-neutral-950 uppercase tracking-tight"></p>
+                    <p id="debate-judge-commentary" class="text-sm italic text-neutral-700 leading-relaxed max-w-md mx-auto"></p>
+                </div>
+                <div class="text-center">
+                    <p id="debate-sentence-text" class="text-sm font-bold text-neutral-900 bg-neutral-100 rounded-xl px-4 py-3 inline-block"></p>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <button id="debate-view-card-btn" class="btn-primary w-full">
+                        <span class="mr-2">📜</span> view case file
+                    </button>
+                    <button id="debate-do-another-btn" class="btn-secondary w-full">
+                        <span class="mr-2">↺</span> do another one
+                    </button>
+                </div>
+            </div>
+        </div>
+
+<!-- ================= DOCUMENT RENDERER VIEW ================= -->
+        <div id="view-renderer" class="hidden flex-col space-y-5">
+            <div class="renderer-toolbar">
+                <button id="renderer-back-btn">← edit</button>
+                <button id="fullscreen-card-btn">⛶ fullscreen</button>
+            </div>
+
+            <div id="fallback-badge" class="hidden w-full bg-amber-50 border border-amber-200 rounded-xl p-3 text-center">
+<span class="text-xs font-mono font-bold text-amber-700"><svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg> AI judge recalled from recess — case is in session</span>
+            </div>
+
+            <div id="render-capture-zone" style="background: var(--color-background); padding: 16px; border-radius: 20px;">
+                <div class="card-stage">
+                    <div id="shareable-card" class="shareable-card select-none">
+                        <p style="margin:auto;font-size:13px;font-family:'Geist Mono',monospace;color:rgba(10,10,12,0.3)">your document will appear here</p>
+                    </div>
+                </div>
+
+                <div class="space-y-3 mt-4">
+                    <div class="grid grid-cols-3 gap-2">
+                        <button id="download-card-btn" class="btn-primary text-[10px]">
+                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg> download
+                        </button>
+                        <button id="copy-text-btn" class="btn-secondary text-[10px]">
+                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg> text
+                        </button>
+                        <button id="copy-caption-btn" class="btn-secondary text-[10px]">
+                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg> caption
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button id="share-case-btn" class="btn-primary">
+                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg> share link
+                        </button>
+                        <button id="copy-link-btn" class="btn-secondary">
+                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg> copy link
+                        </button>
+                    </div>
+
+                    <!-- Tip Jar -->
+                    <div class="bg-white border-2 border-neutral-200 rounded-2xl p-4 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold font-mono text-neutral-950 uppercase tracking-wider"><svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> buy the judge coffee</span>
+                            <span class="text-[10px] font-mono text-neutral-500">court fee schedule</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <a href="https://ko-fi.com/pettyoffice" target="_blank" rel="noopener" class="tip-jar-btn text-center py-2.5 rounded-xl border-2 border-neutral-200 hover:border-neutral-950 hover:bg-neutral-50 transition-all" data-amount="2">
+                                <span class="block text-sm font-bold text-neutral-900">$2</span>
+                                <span class="block text-[9px] font-mono text-neutral-500 uppercase">basic filing fee</span>
+                            </a>
+                            <a href="https://ko-fi.com/pettyoffice" target="_blank" rel="noopener" class="tip-jar-btn text-center py-2.5 rounded-xl border-2 border-neutral-200 hover:border-neutral-950 hover:bg-neutral-50 transition-all" data-amount="5">
+                                <span class="block text-sm font-bold text-neutral-900">$5</span>
+                                <span class="block text-[9px] font-mono text-neutral-500 uppercase">expedited processing</span>
+                            </a>
+                            <a href="https://ko-fi.com/pettyoffice" target="_blank" rel="noopener" class="tip-jar-btn text-center py-2.5 rounded-xl border-2 border-neutral-200 hover:border-neutral-950 hover:bg-neutral-50 transition-all" data-amount="10">
+                                <span class="block text-sm font-bold text-neutral-900">$10</span>
+                                <span class="block text-[9px] font-mono text-neutral-500 uppercase">bribe the jury</span>
+                            </a>
+                        </div>
+                        <a href="https://buymesoda.com/FgUD5yWsatMr6Xyhm0gou6nyhwa2" target="_blank" rel="noopener" class="tip-jar-btn block w-full text-center py-3 rounded-xl border-2 border-neutral-200 hover:border-neutral-950 hover:bg-neutral-50 transition-all mt-2">
+                            <span class="block text-sm font-bold text-neutral-900">🥤 Buy me Soda (Kenya)</span>
+                        </a>
+                    </div>
+
+                    <!-- Premium Stamps -->
+                    <div class="bg-white border-2 border-neutral-200 rounded-2xl p-4 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold font-mono text-neutral-950 uppercase tracking-wider"><svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg> premium stamps</span>
+                            <span class="text-[10px] font-mono text-neutral-500">unlocked free: CASE FILED</span>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="premium-stamp px-3 py-1.5 rounded-lg border-2 border-dashed border-neutral-300 text-neutral-400 text-[10px] font-bold font-mono cursor-help relative" data-stamp="dismissed">
+                                DISMISSED WITH PREJUDICE
+                                <span class="tooltip hidden absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-neutral-900 text-white text-[9px] font-mono rounded-lg whitespace-nowrap">Unlock all stamps for $5 — one-time filing fee</span>
+                            </span>
+                            <span class="premium-stamp px-3 py-1.5 rounded-lg border-2 border-dashed border-neutral-300 text-neutral-400 text-[10px] font-bold font-mono cursor-help relative" data-stamp="contempt">
+                                CONTEMPT OF COURT
+                                <span class="tooltip hidden absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-neutral-900 text-white text-[9px] font-mono rounded-lg whitespace-nowrap">Unlock all stamps for $5 — one-time filing fee</span>
+                            </span>
+                            <span class="premium-stamp px-3 py-1.5 rounded-lg border-2 border-dashed border-neutral-300 text-neutral-400 text-[10px] font-bold font-mono cursor-help relative" data-stamp="appeal">
+                                APPEAL DENIED
+                                <span class="tooltip hidden absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-neutral-900 text-white text-[9px] font-mono rounded-lg whitespace-nowrap">Unlock all stamps for $5 — one-time filing fee</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <button id="do-another-btn" class="btn-secondary">
+                        <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> do another one
+                    </button>
+                </div>
+            </div>
+        </div>
+
+            </div>
+
+    <!-- Docket / Case History -->
+    <div id="docket-panel" class="fixed bottom-0 left-0 right-0 z-40 transform translate-y-[calc(100%-48px)] transition-transform duration-300" style="max-width: 100vw;">
+        <div class="max-w-5xl mx-auto px-4 md:px-12">
+            <button id="docket-toggle" class="docket-tab inline-flex items-center space-x-2 px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider text-neutral-800 hover:text-neutral-950">
+                <span><svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg></span>
+                <span>my docket</span>
+                <span id="docket-count" class="bg-neutral-900 text-white px-1.5 py-0.5 rounded text-[9px]">0</span>
+            </button>
+            <div class="docket-folder rounded-t-2xl p-4 md:p-5 max-h-[50vh] overflow-y-auto">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="font-mono text-xs font-bold uppercase tracking-wider text-neutral-800">pending cases</span>
+                    <button id="clear-docket-btn" class="text-[10px] font-mono text-neutral-600 hover:text-neutral-950 underline">clear docket</button>
+                </div>
+                <div id="docket-list" class="space-y-2">
+                    <p class="text-xs font-mono text-neutral-600 italic">No cases on file. Your brain is currently in contempt of court.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script type="module">
+        import html2canvas from 'html2canvas';
+        import { trackVisit, trackGeneration } from './tracking.js';
+        import { fetchStats, METRICS_CONFIG, animateValue } from './src/stats.js';
+        import { checkMilestones } from './src/milestones.js';
+
+        // ─── Loading Phrases ──────────────────────────────────────────────
+        const LOADING_PHRASES = {
+            sue_brain: [
+                "summoning the jury (it's just the developer)...",
+                "subpoenaing your 3 AM thoughts as evidence...",
+                "the bailiff is reviewing your cringe compilation...",
+                "judge is deliberating... verdict loading...",
+                "case accepted. your brain is now officially sued."
+            ],
+            invoice_ex: [
+                "calculating emotional labor at premium rates...",
+                "itemizing the red flags ignored...",
+                "applying the 'wasted time' multiplier...",
+                "invoice generated. ready for collections."
+            ],
+            breakup_habit: [
+                "scheduling the exit interview...",
+                "HR is reviewing 847 days of performance data...",
+                "printing the termination letter on very official paper...",
+                "escorting the habit from the premises...",
+                "termination effective immediately. no severance."
+            ],
+            cosmic: [
+                "routing request to the Office of Cosmic Records...",
+                "the universe is searching for the requested files...",
+                "bureaucratic redaction in progress...",
+                "celestial clerk is stamping 'RECEIVED'...",
+                "FOIA request filed. expect a response in 20-80 lifetimes."
+            ]
+        };
+
+        const FALLBACK_PHRASES = [
+            "connecting to the cloud (it's cloudy today)...",
+            "the AI is thinking really hard...",
+            "please wait while we generate your document...",
+            "almost there...",
+            "done."
+        ];
+
+        // ─── DOM refs ────────────────────────────────────────────────────
+        const $ = id => document.getElementById(id);
+        const home = $('view-home');
+        const inputLawsuit = $('view-input-lawsuit');
+        const inputInvoice = $('view-input-invoice');
+        const inputHr = $('view-input-hr');
+        const inputCosmic = $('view-input-cosmic');
+        const loadingView = $('view-loading');
+        const rendererView = $('view-renderer');
+        const terminalLogs = $('terminal-logs');
+        const shareableCard = $('shareable-card');
+        const fallbackBadge = $('fallback-badge');
+        const appContainer = $('app-container');
+        const toast = $('toast');
+        const docketPanel = $('docket-panel');
+        const docketList = $('docket-list');
+        const docketCount = $('docket-count');
+
+        const debateView = $('view-debate');
+        const allViews = [home, inputLawsuit, inputInvoice, inputHr, inputCosmic, loadingView, rendererView, debateView];
+        let activeModuleType = null;
+        let activePayload = null;
+        let activeDocument = null;
+        let activeShareUrl = null;
+        let formsData = [];
+        let docketOpen = false;
+        let stampKind = 'filed';
+        let stampRotation = -10;
+
+        function switchView(view) {
+            allViews.forEach(v => v.classList.add('hidden'));
+            view.classList.remove('hidden');
+        }
+
+        function goHome() {
+            activeModuleType = null;
+            activePayload = null;
+            activeDocument = null;
+            activeShareUrl = null;
+            debateData = null;
+            debateUserReplies = [];
+            debateRound = 0;
+            if (fullscreenCard) toggleFullscreen();
+            docketPanel.style.display = '';
+            switchView(home);
+        }
+
+        function showToast(msg) {
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        function getDevice() {
+            return window.innerWidth < 768 ? 'mobile' : 'desktop';
+        }
+
+        function getCountry() {
+            try {
+                const locale = navigator.language || navigator.userLanguage || '';
+                const parts = locale.split('-');
+                if (parts.length > 1) return parts[parts.length - 1].toUpperCase();
+            } catch {}
+            return 'Unknown';
+        }
+
+        // ─── Dynamic Meta Tags for Shared Cases ────────────────────────────
+        function updateMetaForCase(caseData, shareUrl) {
+            const title = caseData?.module_type
+                ? `PettyOffice Case File — ${caseData.module_type.replace(/_/g, ' ')}`
+                : 'PettyOffice.app — The Parody Productivity Suite';
+            const desc = caseData?.document_content
+                ? (caseData.document_content.replace(/<[^>]+>/g, ' ').slice(0, 160) + '...')
+                : 'Paperwork for your emotional chaos. Generate absurd legal documents for everyday grievances.';
+            $('page-title').textContent = title;
+            $('og-title').setAttribute('content', title);
+            $('og-description').setAttribute('content', desc);
+            $('og-url').setAttribute('content', shareUrl || 'https://pettyoffice.app');
+        }
+
+        function resetMeta() {
+            $('page-title').textContent = 'PettyOffice.app — The Parody Productivity Suite';
+            $('og-title').setAttribute('content', 'PettyOffice.app — The Parody Productivity Suite');
+            $('og-description').setAttribute('content', 'Paperwork for your emotional chaos. Generate absurd legal documents for everyday grievances.');
+            $('og-url').setAttribute('content', 'https://pettyoffice.app');
+        }
+
+        // ─── Variable Stamp System ────────────────────────────────────────
+        const STAMP_VARIANTS = {
+            sued:    { filed: 'CASE FILED',             dismissed: 'CASE DISMISSED',     mistrial: 'MISTRIAL DECLARED',  pending: 'APPEAL PENDING',         contempt: 'CONTEMPT OF COURT' },
+            served:  { filed: 'SERVED',                 dismissed: 'DISMISSED',         mistrial: 'DECLARED NULL',     pending: 'APPEAL PENDING',         contempt: 'CONTEMPT OF COURT' },
+            fired:   { filed: 'TERMINATED',             dismissed: 'DISMISSED',         mistrial: 'DECLARED NULL',     pending: 'APPEAL PENDING',         contempt: 'CONTEMPT OF COURT' },
+            foia:    { filed: 'FILED',                  dismissed: 'DISMISSED',         mistrial: 'DECLARED NULL',     pending: 'APPEAL PENDING',         contempt: 'CONTEMPT OF COURT' },
+        };
+        const MODULE_STAMP_FAMILIES = { sue_brain: 'sued', invoice_ex: 'served', breakup_habit: 'fired', cosmic: 'foia' };
+
+        function pickStamp() {
+            const family = MODULE_STAMP_FAMILIES[activeModuleType] || 'sued';
+            const base = STAMP_VARIANTS[family][stampKind] || 'CASE FILED';
+            return { text: base, variant: stampKind };
+        }
+
+        function applyStamp() {
+            const el = shareableCard.querySelector('.stamp');
+            if (!el) return;
+            const info = pickStamp();
+            el.className = 'stamp' + (info.variant !== 'filed' ? ' stamp-' + info.variant : '');
+            const textNode = el.childNodes[0];
+            if (textNode) textNode.textContent = info.text;
+            el.style.transform = `rotate(${stampRotation}deg)`;
+        }
+
+        function isRegeneration(moduleType, primary, secondary) {
+            try {
+                const docket = JSON.parse(localStorage.getItem(DOCKET_KEY) || '[]');
+                return docket.some(item =>
+                    item.module_type === moduleType &&
+                    item.primary_selection === primary &&
+                    item.secondary_selection === secondary
+                );
+            } catch { return false; }
+        }
+
+        // ─── Docket / Case History ───────────────────────────────────────
+        const DOCKET_KEY = 'pettyoffice_docket';
+
+        function getDocket() {
+            try {
+                return JSON.parse(localStorage.getItem(DOCKET_KEY) || '[]');
+            } catch {
+                return [];
+            }
+        }
+
+        function saveDocket(docket) {
+            localStorage.setItem(DOCKET_KEY, JSON.stringify(docket.slice(0, 50)));
+        }
+
+        function addToDocket(moduleType, primary, secondary, documentHtml) {
+            const docket = getDocket();
+            docket.unshift({
+                id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`,
+                module_type: moduleType,
+                primary_selection: primary || '',
+                secondary_selection: secondary || '',
+                generated_at: new Date().toISOString(),
+                document_preview: stripHtml(documentHtml).slice(0, 200),
+                document_html: documentHtml,
+            });
+            saveDocket(docket);
+            renderDocket();
+        }
+
+        function stripHtml(html) {
+            const tmp = document.createElement('div');
+            tmp.innerHTML = html;
+            return tmp.textContent || tmp.innerText || '';
+        }
+
+        function renderDocket() {
+            const docket = getDocket();
+            docketCount.textContent = docket.length > 9 ? '9+' : docket.length;
+            if (docket.length === 0) {
+                docketList.innerHTML = '<p class="text-xs font-mono text-neutral-600 italic">No cases on file. Your brain is currently in contempt of court.</p>';
+                return;
+            }
+            const moduleEmojis = { sue_brain: '<svg class="w-5 h-5 inline text-slate-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"></path></svg>', invoice_ex: '<svg class="w-5 h-5 inline text-slate-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>', breakup_habit: '<svg class="w-5 h-5 inline text-slate-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>', cosmic: '<svg class="w-5 h-5 inline text-slate-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.906 14.142 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"></path></svg>' };
+            docketList.innerHTML = docket.map(item => `
+                <button class="docket-item w-full text-left bg-white/70 hover:bg-white border border-amber-900/10 rounded-xl p-3 transition-all" data-id="${item.id}">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2 min-w-0">
+                            <span class="text-sm">${moduleEmojis[item.module_type] || '<svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>'}</span>
+                            <span class="text-xs font-bold text-neutral-900 truncate">${item.primary_selection}</span>
+                        </div>
+                        <span class="text-[9px] font-mono text-neutral-500 shrink-0">${new Date(item.generated_at).toLocaleDateString()}</span>
+                    </div>
+                    <p class="text-[10px] text-neutral-600 mt-1 truncate">${item.document_preview}</p>
+                </button>
+            `).join('');
+            docketList.querySelectorAll('.docket-item').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const item = docket.find(d => d.id === btn.dataset.id);
+                    if (!item) return;
+                    activeModuleType = item.module_type;
+                    activeDocument = item.document_html;
+                    activePayload = {
+                        module_type: item.module_type,
+                        primary_selection: item.primary_selection,
+                        secondary_selection: item.secondary_selection,
+                    };
+                    shareableCard.innerHTML = item.document_html;
+                    stampKind = 'dismissed';
+                    stampRotation = -12 + Math.random() * 12;
+                    applyStamp();
+                    resetMeta();
+                    switchView(rendererView);
+                    closeDocket();
+                });
+            });
+        }
+
+        function toggleDocket() {
+            docketOpen = !docketOpen;
+            docketPanel.style.transform = docketOpen ? 'translateY(0)' : 'translateY(calc(100% - 48px))';
+        }
+
+        function closeDocket() {
+            docketOpen = false;
+            docketPanel.style.transform = 'translateY(calc(100% - 48px))';
+        }
+
+        $('docket-toggle').addEventListener('click', toggleDocket);
+        $('clear-docket-btn').addEventListener('click', () => {
+            if (!confirm('Permanently clear your entire docket?')) return;
+            localStorage.removeItem(DOCKET_KEY);
+            renderDocket();
+        });
+
+        // ─── Dynamic Tile Loading ────────────────────────────────────────
+        function openModule(moduleType, item) {
+            activeModuleType = moduleType;
+            resetMeta();
+            if (moduleType === 'sue_brain') {
+                $('lawsuit-name-input').value = '';
+                $('lawsuit-input').value = '';
+                updateLawsuitBtn();
+                switchView(inputLawsuit);
+                loadQuickPicks('sue_brain', 'lawsuit-quick-picks', 'lawsuit-quick-options', 'lawsuit-input', updateLawsuitBtn);
+            } else if (moduleType === 'invoice_ex') {
+                $('invoice-primary-input').value = '';
+                $('invoice-secondary-input').value = '';
+                updateInvoiceBtn();
+                switchView(inputInvoice);
+                loadQuickPicks('invoice_ex', 'invoice-quick-picks', 'invoice-quick-options', 'invoice-secondary-input', updateInvoiceBtn);
+            } else if (moduleType === 'breakup_habit') {
+                $('habit-input').value = '';
+                updateHabitBtn();
+                switchView(inputHr);
+                loadQuickPicks('breakup_habit', 'habit-quick-picks', 'habit-quick-options', 'habit-input', updateHabitBtn);
+            } else if (moduleType === 'cosmic') {
+                $('cosmic-primary-input').value = '';
+                $('cosmic-reason-select').value = '';
+                updateCosmicBtn();
+                switchView(inputCosmic);
+                loadQuickPicks('cosmic', 'cosmic-quick-picks', 'cosmic-quick-options', 'cosmic-primary-input', updateCosmicBtn);
+            }
+        }
+
+        async function loadTiles() {
+            try {
+                const res = await fetch('/api/forms');
+                const json = await res.json();
+                if (json.success && json.data && json.data.length > 0) {
+                    formsData = json.data;
+                    const mainTiles = formsData.filter(i => i.id <= 4);
+                    renderTiles(mainTiles);
+                    return;
+                }
+            } catch {}
+            renderFallbackTiles();
+        }
+
+        function renderTiles(items) {
+            if (items.length === 0) { renderFallbackTiles(); return; }
+            const heroSlot = document.getElementById('hero-tile-slot');
+            const secondarySlot = document.getElementById('secondary-tiles-slot');
+            const first = items[0];
+            const actionLabels = { sue_brain: 'file now', invoice_ex: 'generate bill', breakup_habit: 'terminate', cosmic: 'file foia' };
+            heroSlot.innerHTML = `<button class="tile-btn w-full text-left bg-white border-2 border-neutral-950 p-6 rounded-3xl shadow-xl shadow-neutral-900/5 hover:bg-neutral-50/50 transition-all group flex flex-col justify-between h-48 relative overflow-hidden" data-module="${first.module_type}" data-id="${first.id}">
+                <div class="flex justify-between items-start w-full">
+                    <div class="space-y-1">
+                        <span class="font-mono text-xs font-bold text-neutral-500 uppercase tracking-widest">${first.emoji_or_icon} Action</span>
+                        <h2 class="text-xl font-extrabold text-neutral-950 tracking-tight">${first.category_name}</h2>
+                        <p class="text-sm text-neutral-800 font-medium">${first.description_text}</p>
+                    </div>
+                </div>
+                <div class="w-full flex justify-end">
+                    <span class="px-4 py-2 rounded-xl border-2 border-dashed border-neutral-950 font-mono text-xs tracking-wider uppercase font-bold text-neutral-950 bg-neutral-950/5 group-hover:bg-neutral-950 group-hover:text-white transition-all">⬤ ${actionLabels[first.module_type] || 'open'}</span>
+                </div>
+            </button>`;
+            const rest = items.slice(1);
+            if (rest.length === 0) {
+                secondarySlot.innerHTML = '';
+                return;
+            }
+            secondarySlot.innerHTML = '<span class="font-mono text-xs font-bold text-neutral-500 tracking-wider uppercase px-1 block">other forms</span>' +
+                rest.map(item => {
+                    const label = actionLabels[item.module_type] || 'open';
+                    return `<button class="tile-btn w-full text-left p-4 rounded-2xl bg-white/40 hover:bg-white border border-neutral-900/10 hover:border-neutral-950/30 transition-all group flex justify-between items-center shadow-sm" data-module="${item.module_type}" data-id="${item.id}">
+                        <div class="flex items-center space-x-4">
+                            <span class="text-xl">${item.emoji_or_icon}</span>
+                            <div class="space-y-px">
+                                <h3 class="text-sm font-bold text-neutral-950">${item.category_name}</h3>
+                                <p class="text-xs text-neutral-700 font-medium">${item.description_text}</p>
+                            </div>
+                        </div>
+                        <span class="font-mono text-xs font-bold uppercase tracking-wider text-neutral-900 border-b-2 border-neutral-950 pb-0.5 group-hover:text-neutral-950 transition-colors">${label}</span>
+                    </button>`;
+                }).join('');
+            document.querySelectorAll('.tile-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const mod = btn.dataset.module;
+                    openModule(mod, null);
+                });
+            });
+        }
+
+        function renderFallbackTiles() {
+            renderTiles([
+                { id: 1, module_type: 'sue_brain', category_name: 'Sue Your Brain', emoji_or_icon: '⚖️', description_text: 'File a formal complaint against your own brain for emotional damages.' },
+                { id: 2, module_type: 'invoice_ex', category_name: 'Invoice Your Ex', emoji_or_icon: '💸', description_text: 'Generate an itemized bill for emotional labor, time wasted, and red flags ignored.' },
+                { id: 3, module_type: 'breakup_habit', category_name: 'Break Up With a Bad Habit', emoji_or_icon: '💼', description_text: 'Issue a formal PIP and termination letter to a toxic habit.' },
+                { id: 4, module_type: 'cosmic', category_name: 'Universe Contract', emoji_or_icon: '📡', description_text: 'Demand all documents, memos, and divine correspondence related to your situation.' },
+            ]);
+        }
+
+        async function loadQuickPicks(moduleType, containerId, optionsId, inputId, onSelect) {
+            const container = $(containerId);
+            const optionsEl = $(optionsId);
+            try {
+                const res = await fetch('/api/forms');
+                const json = await res.json();
+                if (json.success && json.data) {
+                    const picks = json.data.filter(i => i.module_type === moduleType && i.id !== (formsData[0]?.id || -1));
+                    if (picks.length === 0) { container.classList.add('hidden'); return; }
+                    container.classList.remove('hidden');
+                    optionsEl.innerHTML = picks.map(p => `
+                        <button class="quick-pick w-full text-left px-4 py-2.5 rounded-xl text-sm bg-white border border-neutral-200 hover:border-neutral-950 hover:bg-neutral-100 transition-all flex items-center space-x-3">
+                            <span class="text-base">${p.emoji_or_icon}</span>
+                            <span class="text-neutral-900 font-medium">${p.category_name}</span>
+                        </button>
+                    `).join('');
+                    optionsEl.querySelectorAll('.quick-pick').forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            const text = btn.querySelector('span:last-child').textContent;
+                            $(inputId).value = text;
+                            onSelect();
+                        });
+                    });
+                } else {
+                    container.classList.add('hidden');
+                }
+            } catch {
+                container.classList.add('hidden');
+            }
+        }
+
+        // ─── Back buttons ────────────────────────────────────────────────
+        document.querySelectorAll('.back-to-home').forEach(btn => {
+            btn.addEventListener('click', goHome);
+        });
+
+        $('renderer-back-btn').addEventListener('click', () => {
+            if (fullscreenCard) toggleFullscreen();
+            docketPanel.style.display = '';
+            if (activeModuleType === 'sue_brain') switchView(inputLawsuit);
+            else if (activeModuleType === 'invoice_ex') switchView(inputInvoice);
+            else if (activeModuleType === 'breakup_habit') switchView(inputHr);
+            else if (activeModuleType === 'cosmic') switchView(inputCosmic);
+            else goHome();
+        });
+
+        $('do-another-btn').addEventListener('click', goHome);
+
+        // ─── Lawsuit input logic ─────────────────────────────────────────
+        const lawsuitNameInput = $('lawsuit-name-input');
+        const lawsuitInput = $('lawsuit-input');
+        const lawsuitBtn = $('generate-lawsuit-btn');
+
+        function updateLawsuitBtn() {
+            const valid = lawsuitNameInput.value.trim().length > 0 && lawsuitInput.value.trim().length > 0;
+            lawsuitBtn.disabled = !valid;
+            lawsuitBtn.className = valid
+                ? 'btn-primary'
+                : 'btn-primary';
+        }
+        lawsuitNameInput.addEventListener('input', updateLawsuitBtn);
+        lawsuitInput.addEventListener('input', updateLawsuitBtn);
+
+        // ─── Cease input logic ───────────────────────────────────────────
+        const invoicePrimaryInput = $('invoice-primary-input');
+        const invoiceSecondaryInput = $('invoice-secondary-input');
+        const invoiceBtn = $('generate-invoice-btn');
+
+        function updateInvoiceBtn() {
+            const valid = invoicePrimaryInput.value.trim().length > 0 && invoiceSecondaryInput.value.trim().length > 0;
+            invoiceBtn.disabled = !valid;
+            invoiceBtn.className = valid
+                ? 'btn-primary'
+                : 'btn-primary';
+        }
+        invoicePrimaryInput.addEventListener('input', updateInvoiceBtn);
+        invoiceSecondaryInput.addEventListener('input', updateInvoiceBtn);
+
+        // ─── Habit input logic ────────────────────────────────────────────
+        const habitInput = $('habit-input');
+        const habitBtn = $('generate-hr-btn');
+
+        function updateHabitBtn() {
+            const valid = habitInput.value.trim().length > 0;
+            habitBtn.disabled = !valid;
+            habitBtn.className = valid
+                ? 'btn-primary'
+                : 'btn-primary';
+        }
+        habitInput.addEventListener('input', updateHabitBtn);
+
+        // ─── Cosmic/FOIA input logic ──────────────────────────────────────
+        const cosmicPrimaryInput = $('cosmic-primary-input');
+        const cosmicReasonSelect = $('cosmic-reason-select');
+        const cosmicBtn = $('generate-cosmic-btn');
+
+        function updateCosmicBtn() {
+            const valid = cosmicPrimaryInput.value.trim().length > 0 && cosmicReasonSelect.value.length > 0;
+            cosmicBtn.disabled = !valid;
+            cosmicBtn.className = valid
+                ? 'btn-primary'
+                : 'btn-primary';
+        }
+        cosmicPrimaryInput.addEventListener('input', updateCosmicBtn);
+        cosmicReasonSelect.addEventListener('change', updateCosmicBtn);
+
+        // ─── Terminal loading ─────────────────────────────────────────────
+        function showTerminal(moduleType) {
+            const phrases = LOADING_PHRASES[moduleType] || FALLBACK_PHRASES;
+            terminalLogs.innerHTML = '';
+            switchView(loadingView);
+            let i = 0;
+            return new Promise(resolve => {
+                function tick() {
+                    if (i < phrases.length) {
+                        const p = document.createElement('p');
+                        p.className = 'text-neutral-800 font-medium';
+                        p.textContent = '> ' + phrases[i];
+                        terminalLogs.appendChild(p);
+                        terminalLogs.scrollTop = terminalLogs.scrollHeight;
+                        i++;
+                        setTimeout(tick, 500 + Math.random() * 400);
+                    } else {
+                        resolve();
+                    }
+                }
+                tick();
+            });
+        }
+
+        // ─── API call ─────────────────────────────────────────────────────
+        const API_URL = '/api/generate';
+
+        async function callGenerateAPI(payload) {
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 45000);
+            try {
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                    signal: controller.signal
+                });
+                clearTimeout(timeout);
+                if (!res.ok) throw new Error('API returned ' + res.status);
+                const json = await res.json();
+                if (!json.success || !json.data) throw new Error('Invalid API response');
+                return json;
+            } catch (err) {
+                clearTimeout(timeout);
+                throw err;
+            }
+        }
+
+        async function generateDocument(moduleType, primary, secondary) {
+            debateUserReplies = [];
+            const currency = 'KSh';
+            const payload = {
+                module_type: moduleType,
+                primary_selection: primary,
+                secondary_selection: secondary,
+                user_currency: currency,
+                device: getDevice(),
+                country: getCountry(),
+            };
+            activePayload = payload;
+
+            const terminalPromise = showTerminal(moduleType);
+            let result;
+            try {
+                result = await callGenerateAPI(payload);
+            } catch (err) {
+                console.error('API call failed:', err.message);
+                showToast('document server unavailable. please try again.');
+                await terminalPromise;
+                goHome();
+                return;
+            }
+            await terminalPromise;
+
+            // pick stamp — verdict-based for sue_brain
+            stampRotation = -12 + Math.random() * 12;
+            const data = result.data;
+            if (moduleType === 'sue_brain' && data.verdict) {
+                if (data.verdict === 'CASE DISMISSED') stampKind = 'dismissed';
+                else if (data.verdict === 'MISTRIAL') stampKind = 'mistrial';
+                else stampKind = 'filed';
+            } else {
+                if (Math.random() < 0.05) {
+                    stampKind = 'contempt';
+                } else if (isRegeneration(moduleType, primary, secondary)) {
+                    stampKind = 'dismissed';
+                } else {
+                    stampKind = 'filed';
+                }
+            }
+
+            activeDocument = renderDocument(moduleType, result.data);
+            if (result.source === 'fallback') {
+                fallbackBadge.classList.remove('hidden');
+                fallbackBadge.innerHTML = '<span class="text-xs font-mono font-bold text-amber-700"><svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg> AI judge recalled from recess — case is in session</span>';
+            } else {
+                fallbackBadge.classList.add('hidden');
+            }
+
+            activeModuleType = moduleType;
+            addToDocket(moduleType, primary, secondary, activeDocument);
+            trackGeneration(moduleType);
+
+            if (moduleType === 'sue_brain') {
+                startDebate(result.data);
+            } else {
+                switchView(rendererView);
+            }
+        }
+
+        // ─── Interactive Court Debate Logic ───────────────────────────────
+        let debateData = null;
+        let debateRound = 0;
+        let debateUserReplies = [];
+        let debateDefenseTypes = [];
+        let debateTotalRounds = 2;
+
+        const debateDefenseText = $('debate-defense-text');
+        const debateReplyInput = $('debate-reply-input');
+        const debateSubmitBtn = $('debate-submit-btn');
+        const debateRoundNum = $('debate-round-num');
+        const debateRoundTotal = $('debate-round-total');
+        const debateRoundIndicator = $('debate-round-indicator');
+        const debateBrainSection = $('debate-brain-section');
+        const debateReplySection = $('debate-reply-section');
+        const debateBribeSection = $('debate-bribe-section');
+        const debateRevealVerdictBtn = $('debate-reveal-verdict-btn');
+        const debateVerdictSection = $('debate-verdict-section');
+        const debateCaseRef = $('debate-case-ref');
+        const debateCourtName = $('debate-court-name');
+        const debateParties = $('debate-parties');
+        const debateVerdictText = $('debate-verdict-text');
+        const debateJudgeCommentary = $('debate-judge-commentary');
+        const debateSentenceText = $('debate-sentence-text');
+        const debateViewCardBtn = $('debate-view-card-btn');
+        const debateBackBtn = $('debate-back-btn');
+        const debateReplyWordCount = $('debate-reply-word-count');
+
+        function updateDebateReplyBtn() {
+            debateSubmitBtn.disabled = debateReplyInput.value.trim().length === 0;
+        }
+
+        debateReplyInput.addEventListener('input', () => {
+            updateDebateReplyBtn();
+            const wc = debateReplyInput.value.trim().split(/\s+/).filter(Boolean).length;
+            debateReplyWordCount.textContent = wc > 0 ? wc + ' words' : '';
+        });
+
+        async function startDebate(data) {
+            debateData = data;
+            debateRound = 0;
+            debateUserReplies = [];
+            debateDefenseTypes = [];
+            debateTotalRounds = data.rounds ? data.rounds.length : 2;
+
+            debateCaseRef.textContent = `case no. ${data.caseNo || '---'}`;
+            debateCourtName.textContent = data.courtName || 'The Grand Tribunal of Self-Reflection';
+            debateParties.textContent = `${data.plaintiff || 'Self'} v. ${data.defendant || 'Brain'}`;
+            debateVerdictSection.classList.add('hidden');
+            debateBribeSection.classList.add('hidden');
+            debateBrainSection.classList.remove('hidden');
+            debateReplySection.classList.remove('hidden');
+            debateRoundIndicator.classList.remove('hidden');
+
+            switchView(debateView);
+
+            const liveDefense = await fetchBrainDefense();
+            if (liveDefense && debateData.rounds?.[0]) {
+                debateData.rounds[0].defense = liveDefense;
+            }
+            showDebateRound();
+        }
+
+        async function fetchBrainDefense() {
+            const roundIdx = Math.min(debateRound, (debateData.rounds || []).length - 1);
+            const fallback = debateData.rounds?.[roundIdx]?.defense || 'The brain pleads the fifth.';
+            const category = debateData.category || detectCategoryFromText(activePayload?.secondary_selection || activePayload?.primary_selection || '');
+            const charge = debateData.charges?.[0]?.name || 'Mental Misconduct';
+            const grievance = activePayload?.secondary_selection || '';
+
+            console.log('FETCH_DEFENSE', JSON.stringify({
+                round: debateRound + 1,
+                category,
+                charge,
+                grievance,
+                debateDataCategory: debateData.category,
+                fallbackCategory: detectCategoryFromText(activePayload?.secondary_selection || activePayload?.primary_selection || ''),
+                previousReply: debateUserReplies[debateUserReplies.length - 1] || '',
+            }));
+
+            debateDefenseText.textContent = 'the brain is preparing its defense...';
+            debateDefenseText.parentElement.classList.add('opacity-30');
+            debateReplyInput.disabled = true;
+            debateSubmitBtn.disabled = true;
+            debateSubmitBtn.textContent = '🧠 ...';
+
+            try {
+                const res = await fetch('/api/defense', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        category,
+                        charge,
+                        grievance,
+                        round: debateRound + 1,
+                        previousReply: debateUserReplies[debateUserReplies.length - 1] || '',
+                    }),
+                });
+                console.log('API_RESPONSE: status=' + res.status);
+                const json = await res.json();
+                if (json.success && json.defense) {
+                    console.log('SOURCE: live API (defense="' + json.defense + '", type="' + (json.type || '?') + '", src_field="' + json.source + '")');
+                    debateDefenseTypes.push(json.type || 'flimsy');
+                    return json.defense;
+                } else {
+                    console.log('SOURCE: static fallback (API returned success=false or missing defense)');
+                }
+            } catch (err) {
+                console.log('SOURCE: static fallback (fetch error: ' + (err?.message || 'unknown') + ')');
+            }
+            console.log('SOURCE: static fallback (fallback text="' + fallback + '")');
+            debateDefenseTypes.push('flimsy');
+            return fallback;
+        }
+
+        function showDebateRound() {
+            const roundIdx = Math.min(debateRound, (debateData.rounds || []).length - 1);
+            const roundData = debateData.rounds[roundIdx];
+
+            debateRoundNum.textContent = debateRound + 1;
+            debateRoundTotal.textContent = debateTotalRounds;
+
+            debateDefenseText.textContent = roundData?.defense || 'The brain pleads the fifth.';
+            debateReplyInput.value = '';
+            debateReplyInput.disabled = false;
+            debateReplyInput.focus();
+            updateDebateReplyBtn();
+            debateReplyWordCount.textContent = '';
+
+            debateDefenseText.parentElement.classList.remove('opacity-30');
+            debateReplyInput.parentElement.classList.remove('opacity-30');
+            debateSubmitBtn.textContent = 'object! →';
+            debateSubmitBtn.disabled = true;
+        }
+
+        async function submitDebateReply() {
+            const reply = debateReplyInput.value.trim();
+            if (!reply) return;
+
+            debateUserReplies.push(reply);
+            debateReplyInput.disabled = true;
+            debateSubmitBtn.disabled = true;
+            debateSubmitBtn.textContent = '🧠 ...';
+            debateRound++;
+
+            const roundIdx = Math.min(debateRound, (debateData.rounds || []).length - 1);
+            const roundData = debateData.rounds[roundIdx];
+
+            if (debateRound < debateTotalRounds && roundData) {
+                const liveDefense = await fetchBrainDefense();
+                if (liveDefense) {
+                    debateData.rounds[roundIdx].defense = liveDefense;
+                }
+                setTimeout(() => {
+                    showDebateRound();
+                }, 400 + Math.random() * 300);
+            } else {
+                setTimeout(() => {
+                    endDebate();
+                }, 400 + Math.random() * 300);
+            }
+        }
+
+        function computeAdjustedVerdict(defenseTypes, userReplies) {
+            const weightAdjust = { GUILTY: 0, MITIGATING: 0, DISMISSED: 0, MISTRIAL: 0 };
+            const typeCount = {};
+
+            for (let i = 0; i < defenseTypes.length; i++) {
+                const type = defenseTypes[i] || 'flimsy';
+                typeCount[type] = (typeCount[type] || 0) + 1;
+                const mult = typeCount[type] === 1 ? 1 : 0.5;
+
+                const reply = (userReplies[i] || '').trim();
+                // A sharp reply is long enough and contains actual pushback
+                const isSharp = reply.length > 20 
+                    || /^(no|lie|false|objection|wrong|actually|never|bullshit|cap|cap!|cap.)/i.test(reply);
+
+                if (isSharp) {
+                    // Good strategy from user: push towards GUILTY (user wins)
+                    weightAdjust.GUILTY += 0.25 * mult;
+                    weightAdjust.MITIGATING -= 0.10 * mult;
+                    weightAdjust.DISMISSED -= 0.15 * mult;
+                    weightAdjust.MISTRIAL -= 0.05 * mult;
+                } else {
+                    // Weak strategy from user: push towards DISMISSED (brain wins)
+                    weightAdjust.GUILTY -= 0.20 * mult;
+                    weightAdjust.MITIGATING -= 0.05 * mult;
+                    weightAdjust.DISMISSED += 0.25 * mult;
+                    weightAdjust.MISTRIAL += 0.05 * mult;
+                }
+                
+                // Add minor flavor based on brain's defense type
+                if (type === 'deflect') {
+                    weightAdjust.MISTRIAL += 0.10 * mult; // deflection creates chaos
+                } else if (type === 'lame') {
+                    weightAdjust.GUILTY += 0.05 * mult; // lame defenses are easier to convict
+                }
+            }
+
+            const weights = {
+                GUILTY: 0.35 + weightAdjust.GUILTY,
+                MITIGATING: 0.15 + weightAdjust.MITIGATING,
+                DISMISSED: 0.35 + weightAdjust.DISMISSED,
+                MISTRIAL: 0.15 + weightAdjust.MISTRIAL,
+            };
+
+            weights.GUILTY = Math.min(0.85, Math.max(0.05, weights.GUILTY));
+            weights.MITIGATING = Math.min(0.60, Math.max(0.05, weights.MITIGATING));
+            weights.DISMISSED = Math.min(0.85, Math.max(0.05, weights.DISMISSED));
+            weights.MISTRIAL = Math.min(0.60, Math.max(0.05, weights.MISTRIAL));
+
+            const total = weights.GUILTY + weights.MITIGATING + weights.DISMISSED + weights.MISTRIAL;
+            weights.GUILTY /= total;
+            weights.MITIGATING /= total;
+            weights.DISMISSED /= total;
+            weights.MISTRIAL /= total;
+
+            const rnd = Math.random();
+            let verdict;
+            if (rnd < weights.GUILTY) verdict = 'GUILTY';
+            else if (rnd < weights.GUILTY + weights.MITIGATING) verdict = 'GUILTY WITH MITIGATING CIRCUMSTANCES';
+            else if (rnd < weights.GUILTY + weights.MITIGATING + weights.DISMISSED) verdict = 'CASE DISMISSED';
+            else verdict = 'MISTRIAL';
+
+            return { verdict, weights };
+        }
+
+        function endDebate() {
+            debateReplyInput.disabled = true;
+            debateSubmitBtn.disabled = true;
+            debateSubmitBtn.textContent = '⏳';
+
+            const preVerdict = debateData.verdict || 'GUILTY';
+            const category = debateData.category
+                || detectCategoryFromText(activePayload?.secondary_selection || activePayload?.primary_selection || '')
+                || detectCategoryFromRounds(debateData.rounds);
+
+            const adjusted = computeAdjustedVerdict(debateDefenseTypes, debateUserReplies);
+            const verdict = adjusted.verdict;
+            debateData.verdict = verdict; // overwrite pre-generated verdict so "view case file" shows the adjusted result
+            const outcome = (debateData.outcomes && debateData.outcomes[verdict]) 
+                ? debateData.outcomes[verdict] 
+                : (debateData.outcome || 'The court orders a snack and a nap.');
+
+
+            console.log('VERDICT: pre-generated="' + preVerdict + '" → adjusted="' + verdict + '" weights=' + JSON.stringify(adjusted.weights) + ' types=' + JSON.stringify(debateDefenseTypes) + ' replies=' + JSON.stringify(debateUserReplies));
+
+            // Update stamp kind to match adjusted verdict
+            if (verdict === 'CASE DISMISSED') stampKind = 'dismissed';
+            else if (verdict === 'MISTRIAL') stampKind = 'mistrial';
+            else stampKind = 'filed';
+
+            const commentary = generateJudgeCommentary(debateUserReplies, verdict, category);
+            const verdictLabel = verdict === 'CASE DISMISSED' ? 'case dismissed' :
+                                verdict === 'MISTRIAL' ? 'mistrial declared' :
+                                verdict === 'GUILTY WITH MITIGATING CIRCUMSTANCES' ? 'guilty — with mitigating circumstances' :
+                                'guilty';
+
+            debateVerdictText.textContent = verdictLabel;
+            debateJudgeCommentary.textContent = commentary;
+            debateSentenceText.textContent = 'sentence: ' + outcome;
+
+            debateBrainSection.classList.add('hidden');
+            debateReplySection.classList.add('hidden');
+            debateRoundIndicator.classList.add('hidden');
+            debateBribeSection.classList.remove('hidden');
+        }
+
+        debateRevealVerdictBtn.addEventListener('click', () => {
+            debateBribeSection.classList.add('hidden');
+            debateVerdictSection.classList.remove('hidden');
+        });
+
+        function detectCategoryFromText(text) {
+            const t = (text || '').toLowerCase();
+            if (/(sleep|night|3am|3 am|midnight|bedtime|wake|insomnia|tired|nap|snooze)/.test(t)) return 'sleep';
+            if (/(social|text.*repl|group chat|friend|party|stranger|say.*you.*too|wave|name|shy|avoid|ghost.*friend|ignore.*text)/.test(t)) return 'social';
+            if (/(procrastinat|deadline|scroll|doom|focus|walk.*into.*room|forget|reread|open.*phone|phone.*open|later|choice paralysis|eventually)/.test(t)) return 'procrastination';
+            if (/(overthink|argu.*head|invent.*argu|replay.*convers|cata|worry|think.*too|loop|shower.*argu|what if.*said|panic|replay.*moment)/.test(t)) return 'overthinking';
+            if (/(cringe|embarr|handshake|2018|2019|awkward|waved.*back|replay.*memory|past|flashback|secondhand.*embarr)/.test(t)) return 'cringe';
+            return 'default';
+        }
+
+        function detectCategoryFromRounds(rounds) {
+            if (!rounds || rounds.length === 0) return 'default';
+            const def = (rounds[0]?.defense || '').toLowerCase();
+            if (/(sleep|night|3am|midnight|bedtime|insomnia|cortisol)/.test(def)) return 'sleep';
+            if (/(social|period|group chat|friend|stranger|eye contact|small talk)/.test(def)) return 'social';
+            if (/(procrastinat|deadline|scroll|task|coffee|tiktok)/.test(def)) return 'procrastination';
+            if (/(overthink|text.*layer|simulation|worry|spreadsheet)/.test(def)) return 'overthinking';
+            if (/(cringe|handshake|embarr|awkward|wave|replay.*memory)/.test(def)) return 'cringe';
+            return 'default';
+        }
+
+        function generateJudgeCommentary(replies, verdict, category) {
+            const r1 = (replies[0] || '').toLowerCase();
+            const r2 = (replies[1] || '').toLowerCase();
+            const r1Len = (replies[0] || '').split(/\s+/).filter(Boolean).length;
+            const r2Len = (replies[1] || '').split(/\s+/).filter(Boolean).length;
+
+            const hasEvidence = /(proof|evidence|receipt|screenshot|witness|log|data|timestamp)/.test(r1 + r2);
+            const hasEmotion = /(feel|hurt|sad|angry|tired|anxious|scared|frustrated)/.test(r1 + r2);
+            const hasHumor = /(lol|joke|funny|hilarious|sarcasm|jk|just kidding)/.test(r1 + r2);
+            const hasSelfAware = /(i know|you.re right|fair|guilty|admit|true|honest)/.test(r1 + r2);
+            const isEloquent = r1Len > 15 && r2Len > 10;
+            const isBrief = r1Len < 5 && r2Len < 5;
+
+            const templates = {
+                'GUILTY': [
+                    `The plaintiff's objection was decisive. The brain's defense crumbled under cross-examination. The court finds the brain guilty as charged.`,
+                    `The brain offered excuses, but the plaintiff came with receipts. The evidence speaks for itself. Guilty.`,
+                    `Not even the brain's lawyers could spin their way out of this one. The plaintiff's testimony was airtight. Guilty.`,
+                ],
+                'GUILTY WITH MITIGATING CIRCUMSTANCES': [
+                    `The brain is guilty, but the court acknowledges the plaintiff didn't make it easy. There's blame to share, but the brain bears the weight of it.`,
+                    `A clear violation occurred, but the court notes the plaintiff's own testimony reveals some ... contributing factors. Reduced sentence, but still guilty.`,
+                    `The brain broke the rules, but the plaintiff's objections suggest a pattern of mutual provocation. Guilty with leniency.`,
+                ],
+                'CASE DISMISSED': [
+                    `After hearing both sides, the court finds the brain's actions were not unreasonable. The plaintiff failed to prove intent. Case dismissed.`,
+                    `The brain made a compelling case. Actually, the plaintiff kind of walked into this one. No crime here. Dismissed.`,
+                    `The court cannot in good conscience convict. The brain's defense, while creative, held up under scrutiny. Case dismissed.`,
+                ],
+                'MISTRIAL': [
+                    `The jury is hopelessly deadlocked. The plaintiff and brain are equally convincing — and equally chaotic. This court declares a mistrial.`,
+                    `Both parties argued so passionately that the court lost track of who's suing whom. Mistrial. Go home.`,
+                    `The court finds the evidence too contradictory. The plaintiff blames the brain. The brain blames the plaintiff. Mistrial declared.`,
+                ]
+            };
+
+            const verdictTemplates = templates[verdict] || templates['GUILTY'];
+            let base = verdictTemplates[Math.floor(Math.random() * verdictTemplates.length)];
+
+            const addOns = [];
+            if (hasEvidence) addOns.push('The court appreciates the plaintiff bringing receipts.');
+            if (hasEmotion) addOns.push('The emotional testimony did not go unnoticed by the bench.');
+            if (hasHumor) addOns.push('The court appreciates levity in these proceedings.');
+            if (hasSelfAware) addOns.push('Self-awareness is noted and may have influenced the outcome.');
+            if (isEloquent) addOns.push('The eloquence of the objections was impressive, if inadmissible.');
+            if (isBrief) addOns.push('The brevity of the objections was refreshing, if not exactly substantive.');
+
+            if (addOns.length > 0) {
+                const selected = addOns[Math.floor(Math.random() * addOns.length)];
+                base += ' ' + selected;
+            }
+
+            return base;
+        }
+
+        debateSubmitBtn.addEventListener('click', submitDebateReply);
+
+        debateReplyInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                if (!debateSubmitBtn.disabled) submitDebateReply();
+            }
+        });
+
+        const debateDoAnotherBtn = $('debate-do-another-btn');
+        debateDoAnotherBtn.addEventListener('click', goHome);
+
+        debateViewCardBtn.addEventListener('click', () => {
+            if (debateData && debateUserReplies.length > 0) {
+                const dataWithReplies = JSON.parse(JSON.stringify(debateData));
+                (dataWithReplies.rounds || []).forEach((r, i) => {
+                    if (debateUserReplies[i]) {
+                        r.rebuttal = debateUserReplies[i];
+                    }
+                });
+                activeDocument = renderDocument(activeModuleType, dataWithReplies);
+                shareableCard.innerHTML = activeDocument;
+                applyStamp();
+                const docket = getDocket();
+                const idx = docket.findIndex(item =>
+                    item.module_type === activeModuleType &&
+                    item.primary_selection === activePayload?.primary_selection
+                );
+                if (idx !== -1) {
+                    docket[idx].document_html = activeDocument;
+                    saveDocket(docket);
+                    renderDocket();
+                }
+            }
+            debateBrainSection.classList.remove('hidden');
+            debateReplySection.classList.remove('hidden');
+            debateRoundIndicator.classList.remove('hidden');
+            debateVerdictSection.classList.add('hidden');
+            debateBribeSection.classList.add('hidden');
+            switchView(rendererView);
+        });
+
+        debateBackBtn.addEventListener('click', () => {
+            if (confirm('Abandon this trial? The debate will be lost.')) {
+                debateData = null;
+                debateUserReplies = [];
+                switchView(inputLawsuit);
+            }
+        });
+
+        // ─── Generate button handlers ─────────────────────────────────────
+        lawsuitBtn.addEventListener('click', () => {
+            const name = lawsuitNameInput.value.trim() || 'The Conscious Self';
+            const grievance = lawsuitInput.value.trim() || 'keeping me up at 3am with hypothetical arguments';
+            generateDocument('sue_brain', name, grievance);
+        });
+
+        invoiceBtn.addEventListener('click', () => {
+            const primary = invoicePrimaryInput.value.trim();
+            const secondary = invoiceSecondaryInput.value.trim();
+            if (!primary || !secondary) return;
+            generateDocument('invoice_ex', primary, secondary);
+        });
+
+        habitBtn.addEventListener('click', () => {
+            const habit = habitInput.value.trim();
+            if (!habit) return;
+            generateDocument('breakup_habit', habit, '');
+        });
+
+        cosmicBtn.addEventListener('click', () => {
+            const primary = cosmicPrimaryInput.value.trim();
+            const secondary = cosmicReasonSelect.value;
+            if (!primary || !secondary) return;
+            generateDocument('cosmic', primary, secondary);
+        });
+
+        // ─── HTML Sanitizer ──────────────────────────────────────────────
+        function esc(str) {
+            if (typeof str !== 'string') return str;
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+        function sanitizeData(obj) {
+            if (typeof obj === 'string') return esc(obj);
+            if (Array.isArray(obj)) return obj.map(sanitizeData);
+            if (obj && typeof obj === 'object') {
+                const r = {};
+                for (const k in obj) r[k] = sanitizeData(obj[k]);
+                return r;
+            }
+            return obj;
+        }
+
+        // ─── Document Renderers ───────────────────────────────────────────
+        function renderDocument(moduleType, data) {
+            data = sanitizeData(data);
+            const compactHtml = renderCompactCard(moduleType, data);
+            const fullHtml = renderFullDocket(moduleType, data);
+            shareableCard.innerHTML = compactHtml;
+            // stash full docket for toggle
+            let fullEl = shareableCard.querySelector('.full-docket-content');
+            if (!fullEl) {
+                fullEl = document.createElement('div');
+                fullEl.className = 'full-docket-content';
+                fullEl.style.display = 'none';
+                shareableCard.appendChild(fullEl);
+            }
+            fullEl.innerHTML = fullHtml;
+            sharedFullHtml = fullHtml;
+            applyStamp();
+            return compactHtml;
+        }
+
+        let sharedFullHtml = '';
+
+        function renderCompactCard(m, d) {
+            const stampEl = `<div class="stamp" style="top:24px;right:24px;transform:rotate(-10deg)">STAMP_TEXT<div class="stamp-ring"></div></div>`;
+            const footerEl = `<div class="footer-mark" style="margin-top:16px;text-align:center;border-top:1px dashed rgba(10,10,12,0.12);padding-top:10px"><span style="font-size:9px;font-weight:700;color:rgba(10,10,12,0.3);font-family:'Geist Mono',monospace;text-transform:uppercase;letter-spacing:0.1em"><svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg> GENERATED VIA PETTYOFFICE.APP</span></div>`;
+            const toggleBtn = `<button class="docket-toggle-btn" style="margin-top:12px;width:100%;background:none;border:1px solid rgba(10,10,12,0.1);padding:8px;border-radius:8px;font-size:10px;font-family:'Geist Mono',monospace;color:rgba(10,10,12,0.4);cursor:pointer;transition:all 0.15s">VIEW FULL CASE FILE →</button>`;
+            const hasUserReplies = debateUserReplies.length > 0;
+
+            if (m === 'sue_brain') return `
+                ${stampEl}
+                <div style="text-align:center;margin-bottom:14px;border-bottom:2px solid #0A0A0C;padding-bottom:10px">
+                    <h2 style="margin:0;font-size:18px;font-weight:800;text-transform:uppercase;letter-spacing:0.04em;color:#0A0A0C">${d.courtName}</h2>
+                    <p style="margin:4px 0 0;font-size:10px;color:rgba(10,10,12,0.4);font-family:'Geist Mono',monospace">CASE NO. ${d.caseNo} · Filed: ${d.dateFiled}</p>
+                </div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:14px;font-size:12px">
+                    <div><p style="margin:0;color:#BE185D;font-weight:700;font-size:9px;text-transform:uppercase;letter-spacing:0.06em">Plaintiff</p><p style="margin:2px 0 0;font-weight:700">${d.plaintiff}</p></div>
+                    <div style="text-align:right"><p style="margin:0;color:#BE185D;font-weight:700;font-size:9px;text-transform:uppercase;letter-spacing:0.06em">Defendant</p><p style="margin:2px 0 0;font-weight:700">${d.defendant}</p></div>
+                </div>
+                <div style="background:#fff;border:1px solid rgba(10,10,12,0.08);border-radius:10px;padding:14px;margin-bottom:10px">
+                    <p style="margin:0 0 4px;font-size:9px;color:#BE185D;font-weight:700;text-transform:uppercase;letter-spacing:0.08em">Charge 1: ${d.charges[0]?.name || 'N/A'}</p>
+                    <p style="margin:0;font-size:13px;line-height:1.4;font-style:italic">"${d.charges[0]?.desc || ''}"</p>
+                    <div style="margin:8px 0 0;padding-top:8px;border-top:1px solid rgba(10,10,12,0.06)">
+                        ${(d.rounds || []).map((r, i) => `
+                            ${i > 0 ? '<p style="margin:6px 0;text-align:center;font-size:7px;color:rgba(10,10,12,0.2);letter-spacing:0.5em">· · ·</p>' : ''}
+                            <p style="margin:0;font-size:11px;line-height:1.5"><span style="font-weight:700;color:#BE185D">▸ brain</span> ${r.defense || ''}</p>
+                            <p style="margin:2px 0 0;font-size:11px;line-height:1.5"><span style="font-weight:700;${hasUserReplies ? 'color:#BE185D' : 'color:rgba(10,10,12,0.45)'}">▸ ${hasUserReplies ? 'you' : 'court'}</span> ${r.rebuttal || ''}</p>
+                        `).join('')}
+                    </div>
+                </div>
+                <div style="text-align:center;border-top:2px solid #0A0A0C;padding-top:10px">
+                    <p style="margin:0 0 2px;font-size:9px;color:rgba(10,10,12,0.4);text-transform:uppercase;letter-spacing:0.08em;font-weight:700">Verdict</p>
+                    <p style="margin:0;font-size:16px;font-weight:900;color:#BE185D;text-transform:uppercase">${d.verdict || 'GUILTY'}</p>
+                    <p style="margin:6px 0 0;font-size:11px;color:#0A0A0C">Outcome: ${d.outcome || ''}</p>
+                </div>
+                ${footerEl}
+                ${toggleBtn}
+            `;
+            if (m === 'invoice_ex') return `
+                ${stampEl}
+                <div style="text-align:center;margin-bottom:16px;border-bottom:2px solid #0A0A0C;padding-bottom:12px">
+                    <h2 style="margin:0;font-size:18px;font-weight:800;text-transform:uppercase;letter-spacing:0.04em;color:#0A0A0C">INVOICE FOR EMOTIONAL LABOR</h2>
+                    <p style="margin:4px 0 0;font-size:10px;color:#BE185D;font-weight:600">${d.subject || 'INVOICE'}</p>
+                    <p style="margin:2px 0 0;font-size:10px;color:rgba(10,10,12,0.4);font-family:'Geist Mono',monospace">Ref: ${d.invoiceNo || 'INV-01'} · ${d.date}</p>
+                </div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:16px;font-size:12px">
+                    <div><p style="margin:0;color:#BE185D;font-weight:700;font-size:9px;text-transform:uppercase;letter-spacing:0.06em">Bill To</p><p style="margin:2px 0 0;font-weight:700">${d.billTo}</p></div>
+                </div>
+                <div style="background:#fff;border:1px solid rgba(10,10,12,0.08);border-radius:10px;padding:16px;margin-bottom:16px">
+                    <div style="display:flex;justify-content:space-between;border-bottom:1px solid #eee;padding-bottom:8px;margin-bottom:8px">
+                        <span style="font-size:9px;color:rgba(10,10,12,0.4);font-weight:700;text-transform:uppercase;letter-spacing:0.08em">Description</span>
+                        <span style="font-size:9px;color:rgba(10,10,12,0.4);font-weight:700;text-transform:uppercase;letter-spacing:0.08em">Amount</span>
+                    </div>
+                    ${(d.items || []).map(i => `
+                        <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+                            <span style="font-size:12px;color:#0A0A0C">${i.desc}</span>
+                            <span style="font-size:12px;font-family:'Geist Mono',monospace;font-weight:600">${i.amount}</span>
+                        </div>
+                    `).join('')}
+                    <div style="border-top:1px solid #eee;padding-top:8px;margin-top:8px">
+                        <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                            <span style="font-size:11px;color:rgba(10,10,12,0.6)">Subtotal</span>
+                            <span style="font-size:11px;font-family:'Geist Mono',monospace">${d.subtotal}</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+                            <span style="font-size:11px;color:rgba(10,10,12,0.6)">Tax</span>
+                            <span style="font-size:11px;font-family:'Geist Mono',monospace">${d.tax}</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;border-top:2px solid #0A0A0C;padding-top:8px">
+                            <span style="font-size:14px;font-weight:800;text-transform:uppercase">Total</span>
+                            <span style="font-size:14px;font-family:'Geist Mono',monospace;font-weight:800;color:#BE185D">${d.total}</span>
+                        </div>
+                    </div>
+                </div>
+                <div style="text-align:center;border-top:2px solid #0A0A0C;padding-top:12px">
+                    <p style="margin:0 0 2px;font-size:9px;color:rgba(10,10,12,0.4);text-transform:uppercase;letter-spacing:0.08em;font-weight:700">Terms</p>
+                    <p style="margin:6px 0 0;font-size:11px;color:#0A0A0C;font-style:italic">${d.terms}</p>
+                </div>
+                ${footerEl}
+                ${toggleBtn}
+            `;
+            if (m === 'breakup_habit') return `
+                ${stampEl}
+                <div style="text-align:center;margin-bottom:16px;border-bottom:2px solid #0A0A0C;padding-bottom:12px">
+                    <h2 style="margin:0;font-size:18px;font-weight:800;text-transform:uppercase;letter-spacing:0.04em;color:#0A0A0C">TERMINATION NOTICE</h2>
+                    <p style="margin:4px 0 0;font-size:10px;color:rgba(10,10,12,0.4);font-family:'Geist Mono',monospace">Memo No. ${d.memoNo} · ${d.date}</p>
+                </div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:16px;font-size:12px">
+                    <div><p style="margin:0;color:#BE185D;font-weight:700;font-size:9px;text-transform:uppercase;letter-spacing:0.06em">From</p><p style="margin:2px 0 0;font-weight:700">${d.from}</p></div>
+                    <div style="text-align:right"><p style="margin:0;color:#BE185D;font-weight:700;font-size:9px;text-transform:uppercase;letter-spacing:0.06em">To</p><p style="margin:2px 0 0;font-weight:700">${d.to}</p></div>
+                </div>
+                <div style="background:#fff;border:1px solid rgba(10,10,12,0.08);border-radius:10px;padding:16px;margin-bottom:16px">
+                    <p style="margin:0 0 6px;font-size:9px;color:#BE185D;font-weight:700;text-transform:uppercase;letter-spacing:0.08em">Grounds</p>
+                    <p style="margin:0;font-size:14px;line-height:1.5;font-style:italic">"${d.grounds[0] || ''}"</p>
+                </div>
+                <div style="text-align:center;border-top:2px solid #0A0A0C;padding-top:12px">
+                    <p style="margin:0 0 2px;font-size:9px;color:rgba(10,10,12,0.4);text-transform:uppercase;letter-spacing:0.08em;font-weight:700">Final Order</p>
+                    <p style="margin:0;font-size:13px;font-weight:800;color:#BE185D">TERMINATED</p>
+                    <p style="margin:6px 0 0;font-size:11px;color:#0A0A0C">${d.separationTerms}</p>
+                </div>
+                ${footerEl}
+                ${toggleBtn}
+            `;
+            if (m === 'cosmic') return `
+                ${stampEl}
+                <div style="text-align:center;margin-bottom:16px;border-bottom:2px solid #0A0A0C;padding-bottom:12px">
+                    <h2 style="margin:0;font-size:18px;font-weight:800;text-transform:uppercase;letter-spacing:0.04em;color:#0A0A0C">FOIA REQUEST</h2>
+                    <p style="margin:4px 0 0;font-size:10px;color:#BE185D;font-weight:600">FREEDOM OF INFORMATION ACT TO THE UNIVERSE</p>
+                    <p style="margin:2px 0 0;font-size:10px;color:rgba(10,10,12,0.4);font-family:'Geist Mono',monospace">Request No. ${d.requestNo} · ${d.date}</p>
+                </div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:16px;font-size:12px">
+                    <div><p style="margin:0;color:#BE185D;font-weight:700;font-size:9px;text-transform:uppercase;letter-spacing:0.06em">Requester</p><p style="margin:2px 0 0;font-weight:700">${d.requester}</p></div>
+                    <div style="text-align:right"><p style="margin:0;color:#BE185D;font-weight:700;font-size:9px;text-transform:uppercase;letter-spacing:0.06em">Agency</p><p style="margin:2px 0 0;font-weight:700">${d.agency}</p></div>
+                </div>
+                <div style="background:#fff;border:1px solid rgba(10,10,12,0.08);border-radius:10px;padding:16px;margin-bottom:16px">
+                    <p style="margin:0 0 6px;font-size:9px;color:#BE185D;font-weight:700;text-transform:uppercase;letter-spacing:0.08em">Subject</p>
+                    <p style="margin:0;font-size:14px;line-height:1.5;font-style:italic">"${d.subject}"</p>
+                </div>
+                <div style="text-align:center;border-top:2px solid #0A0A0C;padding-top:12px">
+                    <p style="margin:0 0 2px;font-size:9px;color:rgba(10,10,12,0.4);text-transform:uppercase;letter-spacing:0.08em;font-weight:700">Agency Response</p>
+                    <p style="margin:0;font-size:13px;font-style:italic;color:#0A0A0C">${d.agencyResponse}</p>
+                </div>
+                ${footerEl}
+                ${toggleBtn}
+            `;
+            return '';
+        }
+
+        function renderFullDocket(m, d) {
+            const hasUserReplies = debateUserReplies.length > 0;
+            if (m === 'sue_brain') {
+                const chargesHtml = d.charges.map((c, i) => `
+                    <div style="margin-bottom:8px">
+                        <p style="color:#BE185D;font-weight:800;text-transform:uppercase;letter-spacing:0.06em;font-size:9.5px;margin-bottom:1px">Charge ${i+1}: ${c.name}</p>
+                        <p style="color:#000;font-size:10.5px;line-height:1.4">${c.desc}</p>
+                    </div>
+                `).join('');
+                const evidenceHtml = d.evidence.map(e => `<li style="margin-bottom:2px">${e}</li>`).join('');
+                return `
+                    <div class="divider"></div>
+                    ${chargesHtml}
+                    <div class="divider"></div>
+                    <div style="margin-bottom:8px">
+                        <p class="section-label">THE EVIDENCE</p>
+                        <ul style="color:#000;font-size:10.5px;line-height:1.5;padding-left:16px;list-style-type:disc;">${evidenceHtml}</ul>
+                    </div>
+                    <div class="divider"></div>
+                    ${(d.rounds || []).map((r, i) => `
+                        ${i > 0 ? '<div style="text-align:center;font-size:7px;color:rgba(10,10,12,0.2);letter-spacing:0.5em;margin:6px 0">· · ·</div>' : ''}
+                        <div style="margin-bottom:4px">
+                            <p class="section-label" style="color:#BE185D">▸ BRAIN</p>
+                            <p style="color:#000;font-size:10.5px;line-height:1.4;margin:1px 0 0 0">${r.defense || ''}</p>
+                        </div>
+                        <div style="margin-bottom:8px">
+                            <p class="section-label" style="color:${hasUserReplies ? '#BE185D' : 'rgba(10,10,12,0.4)'}">▸ ${hasUserReplies ? 'PLAINTIFF' : 'COURT'}</p>
+                            <p style="color:#000;font-size:10.5px;line-height:1.4;margin:1px 0 0 0">${r.rebuttal || ''}</p>
+                        </div>
+                        <div class="divider"></div>
+                    `).join('')}
+                    <div>
+                        <p class="section-label">THE VERDICT (FULL)</p>
+                        <p style="color:#0A0A0C;font-weight:800;font-size:11.5px;margin-bottom:1px;text-transform:uppercase">${d.verdict}</p>
+                        <p style="color:#000;font-size:10px;line-height:1.4">Outcome: ${d.outcome}</p>
+                    </div>
+                    <p style="text-align:center;font-size:7px;color:rgba(10,10,12,0.2);font-family:'Geist Mono',monospace;margin-top:8px">Docket Ref: ${d.docketRef}</p>
+                `;
+            }
+            if (m === 'invoice_ex') {
+                const itemsHtml = d.items.map(i => `<div style="display:flex;justify-content:space-between;margin-bottom:2px"><span style="color:#000;font-size:10px">${i.desc}</span><span style="font-family:'Geist Mono',monospace;font-size:10px;font-weight:600">${i.amount}</span></div>`).join('');
+                return `
+                    <div class="divider"></div>
+                    <p style="font-size:10px;color:#0A0A0C;font-weight:800;margin-bottom:6px">RE: ${d.subject || 'INVOICE'}</p>
+                    <p class="section-label" style="margin-bottom:4px">ITEMS BILLED</p>
+                    ${itemsHtml}
+                    <div class="divider"></div>
+                    <div style="display:flex;justify-content:space-between;margin-bottom:2px"><span style="color:rgba(10,10,12,0.6);font-size:10px">Subtotal</span><span style="font-family:'Geist Mono',monospace;font-size:10px">${d.subtotal}</span></div>
+                    <div style="display:flex;justify-content:space-between;margin-bottom:2px"><span style="color:rgba(10,10,12,0.6);font-size:10px">Tax</span><span style="font-family:'Geist Mono',monospace;font-size:10px">${d.tax}</span></div>
+                    <div style="display:flex;justify-content:space-between;margin-top:4px"><span style="font-size:12px;font-weight:800">TOTAL</span><span style="font-family:'Geist Mono',monospace;font-size:12px;font-weight:800;color:#BE185D">${d.total}</span></div>
+                    <div class="divider"></div>
+                    <p class="section-label" style="margin-bottom:4px">TERMS</p>
+                    <p style="color:#0A0A0C;font-size:10px;font-style:italic">${d.terms}</p>
+                `;
+            }
+            if (m === 'breakup_habit') {
+                const groundsHtml = d.grounds.map(g => `<li style="margin-bottom:2px">${g}</li>`).join('');
+                return `
+                    <div class="divider"></div>
+                    <p style="font-size:10px;color:#0A0A0C;font-weight:800;margin-bottom:4px">RE: ${d.subject}</p>
+                    <p style="color:#000;font-size:10.5px;line-height:1.4;margin-bottom:10px">${d.performanceHistory}</p>
+                    <p class="section-label">GROUNDS FOR TERMINATION</p>
+                    <ol style="color:#000;font-size:10.5px;line-height:1.5;padding-left:16px;margin-bottom:10px">${groundsHtml}</ol>
+                    <div class="divider"></div>
+                    <p class="section-label">PERFORMANCE IMPROVEMENT PLAN</p>
+                    <p style="color:#000;font-size:10.5px;line-height:1.4;margin-bottom:8px">${d.pip}</p>
+                    <div class="divider"></div>
+                    <p class="section-label">SEPARATION TERMS</p>
+                    <p style="color:#000;font-size:10.5px;line-height:1.4;margin-bottom:8px">${d.separationTerms}</p>
+                    <p style="color:#0A0A0C;font-weight:800;font-size:11.5px;text-align:center;margin-top:6px">${d.finalOrder}</p>
+                `;
+            }
+            if (m === 'cosmic') {
+                const recordsHtml = d.recordsSought.map(r => `<li style="margin-bottom:2px">${r}</li>`).join('');
+                return `
+                    <div class="divider"></div>
+                    <p style="font-size:10px;color:#0A0A0C;font-weight:800;margin-bottom:4px">RE: ${d.subject}</p>
+                    <p style="font-size:10px;color:#000;line-height:1.4;margin-bottom:8px"><span style="font-weight:800">Reason for Request:</span> ${d.reason}</p>
+                    <p class="section-label">RECORDS SOUGHT</p>
+                    <ol style="color:#000;font-size:10px;line-height:1.5;padding-left:16px;margin-bottom:8px">${recordsHtml}</ol>
+                    <div class="divider"></div>
+                    <p class="section-label">AGENCY RESPONSE (FULL)</p>
+                    <p style="color:#000;font-size:10px;line-height:1.4;margin-bottom:8px;font-style:italic">${d.agencyResponse}</p>
+                    <div class="divider"></div>
+                    <p style="font-size:9px;color:rgba(10,10,12,0.5);text-align:center">${d.appeals}</p>
+                `;
+            }
+            return '';
+        }
+
+        // ─── Share & Case URL ─────────────────────────────────────────────
+        async function shareCurrentCase() {
+            if (!activePayload || !activeDocument) {
+                showToast('nothing to share yet');
+                return;
+            }
+            try {
+                const res = await fetch('/api/share', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        module_type: activePayload.module_type,
+                        primary_selection: activePayload.primary_selection,
+                        secondary_selection: activePayload.secondary_selection,
+                        document_content: activeDocument,
+                    }),
+                });
+                const json = await res.json();
+                if (!res.ok || !json.share_url) throw new Error(json.error || 'Share failed');
+                activeShareUrl = `${window.location.origin}${json.share_url}`;
+                await navigator.clipboard.writeText(activeShareUrl);
+                updateMetaForCase({
+                    module_type: activePayload.module_type,
+                    document_content: stripHtml(activeDocument),
+                }, activeShareUrl);
+                stampKind = 'pending';
+                applyStamp();
+                showToast('Case file copied to clipboard. Serve it to your friends.');
+            } catch (err) {
+                console.error('Share failed:', err);
+                showToast('share failed: ' + err.message);
+            }
+        }
+
+        async function copyCurrentLink() {
+            if (!activeShareUrl) {
+                await shareCurrentCase();
+                return;
+            }
+            try {
+                await navigator.clipboard.writeText(activeShareUrl);
+                showToast('Case file copied to clipboard. Serve it to your friends.');
+            } catch (err) {
+                showToast('copy failed');
+            }
+        }
+
+        // ─── Download Card ─────────────────────────────────────────────────
+        async function downloadCard() {
+            const card = document.getElementById('render-capture-zone');
+            if (!shareableCard.querySelector('.stamp')) {
+                showToast('no document to download');
+                return;
+            }
+            try {
+                const canvas = await html2canvas(card, {
+                    scale: 2,
+                    backgroundColor: '#F8FAFC',
+                    logging: false,
+                    useCORS: true,
+                    allowTaint: true,
+                });
+                const link = document.createElement('a');
+                link.download = `pettyoffice-case-${Date.now()}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                showToast('Case card downloaded!');
+            } catch (err) {
+                console.error('Download failed:', err);
+                showToast('download failed — try screenshot instead');
+            }
+        }
+
+        // ─── Copy as Text ─────────────────────────────────────────────────
+        function getPlainText() {
+            const text = shareableCard.textContent || '';
+            return text
+                .replace(/GENERATED VIA PETTYOFFICE\.APP/g, '')
+                .replace(/\n{3,}/g, '\n\n')
+                .trim();
+        }
+
+        async function copyAsText() {
+            const text = getPlainText();
+            if (!text) { showToast('no document to copy'); return; }
+            try {
+                await navigator.clipboard.writeText(text);
+                showToast('Document text copied!');
+            } catch {
+                showToast('copy failed');
+            }
+        }
+
+        // ─── Copy Caption ─────────────────────────────────────────────────
+        const CAPTIONS = [
+            'The Grand Tribunal just ruled on my case. My brain is in review.',
+            'I just filed paperwork with the Universe. Checking my email for a cosmic response.',
+            'My anxiety has been formally served. It is in review with legal.',
+            'Termination notice issued to a bad habit. HR has been notified.',
+            'A legal document just settled something my therapist could not.',
+            'I am taking my emotional grievances to court. Literally.',
+        ];
+
+        async function copyCaption() {
+            const caption = CAPTIONS[Math.floor(Math.random() * CAPTIONS.length)];
+            try {
+                await navigator.clipboard.writeText(caption + '\n\npettyoffice.app');
+                showToast('Caption copied! Ready to post.');
+            } catch {
+                showToast('copy failed');
+            }
+        }
+
+        // ─── Fullscreen Toggle ────────────────────────────────────────────
+        let fullscreenCard = false;
+
+        function toggleFullscreen() {
+            fullscreenCard = !fullscreenCard;
+            const stage = shareableCard.closest('.card-stage');
+            if (fullscreenCard) {
+                stage.style.background = 'none';
+                stage.style.padding = '0';
+                shareableCard.style.boxShadow = 'none';
+                shareableCard.style.borderRadius = '0';
+                shareableCard.style.width = '100%';
+                shareableCard.style.maxWidth = '440px';
+                shareableCard.style.margin = '0 auto';
+                document.getElementById('view-renderer').classList.add('min-h-screen');
+                document.getElementById('view-renderer').classList.add('justify-center');
+                document.querySelector('.renderer-toolbar').style.display = 'none';
+                // hide docket
+                docketPanel.style.display = 'none';
+            } else {
+                stage.style.background = '';
+                stage.style.padding = '';
+                shareableCard.style.boxShadow = '';
+                shareableCard.style.borderRadius = '';
+                shareableCard.style.width = '';
+                shareableCard.style.maxWidth = '';
+                shareableCard.style.margin = '';
+                document.getElementById('view-renderer').classList.remove('min-h-screen');
+                document.getElementById('view-renderer').classList.remove('justify-center');
+                document.querySelector('.renderer-toolbar').style.display = '';
+                docketPanel.style.display = '';
+            }
+        }
+
+        $('share-case-btn').addEventListener('click', shareCurrentCase);
+        $('copy-link-btn').addEventListener('click', copyCurrentLink);
+        $('download-card-btn').addEventListener('click', downloadCard);
+        $('copy-text-btn').addEventListener('click', copyAsText);
+        $('copy-caption-btn').addEventListener('click', copyCaption);
+        $('fullscreen-card-btn').addEventListener('click', toggleFullscreen);
+
+        // ─── Full Docket Toggle ───────────────────────────────────────────
+        function toggleDocketFull() {
+            const fullEl = shareableCard.querySelector('.full-docket-content');
+            const btn = shareableCard.querySelector('.docket-toggle-btn');
+            if (!fullEl) return;
+            const isOpen = fullEl.style.display !== 'none';
+            fullEl.style.display = isOpen ? 'none' : 'block';
+            if (btn) btn.textContent = isOpen ? 'VIEW FULL CASE FILE →' : '← SHOW LESS';
+        }
+        shareableCard.addEventListener('click', (e) => {
+            if (e.target.classList.contains('docket-toggle-btn')) {
+                toggleDocketFull();
+            }
+        });
+
+        // ─── Premium / Tip Tracking ────────────────────────────────────────
+        async function trackPremiumInterest(amount) {
+            try {
+                await fetch('/api/event', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ event: 'premium_interest', amount }),
+                });
+            } catch (err) {
+                console.warn('Premium interest tracking failed:', err);
+            }
+        }
+
+        document.querySelectorAll('.tip-jar-btn').forEach(btn => {
+            btn.addEventListener('click', () => trackPremiumInterest(btn.dataset.amount));
+        });
+
+        document.querySelectorAll('.premium-stamp').forEach(stamp => {
+            stamp.addEventListener('mouseenter', () => stamp.querySelector('.tooltip').classList.remove('hidden'));
+            stamp.addEventListener('mouseleave', () => stamp.querySelector('.tooltip').classList.add('hidden'));
+            stamp.addEventListener('click', () => trackPremiumInterest(5));
+        });
+
+        // ─── Live Metrics ─────────────────────────────────────────────────
+        const metricsGrid = $('metrics-grid');
+        const metricsSummary = $('metrics-summary');
+        const metricsUpdateTime = $('metrics-update-time');
+
+        function buildMetricsRows(stats) {
+            metricsGrid.innerHTML = METRICS_CONFIG.map(m => {
+                const val = stats.toolCounts[m.key] || 0;
+                return `<div class="flex items-center justify-between font-mono text-sm font-bold text-neutral-900">
+                    <span class="text-neutral-800">${m.icon} ${m.label}</span>
+                    <span class="text-neutral-950 font-bold tabular-nums metric-value" data-metric="${m.key}">${val.toLocaleString()}</span>
+                </div>`;
+            }).join('');
+            metricsSummary.innerHTML = `
+                <div class="flex items-center font-mono text-sm font-bold text-neutral-900">
+                    <span class="text-neutral-800"><svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Countries represented</span>
+                    <span class="text-neutral-950 font-bold tabular-nums metric-value" data-metric="countries">0</span>
+                </div>
+                <div class="flex items-center font-mono text-sm font-bold text-neutral-900">
+                    <span class="text-neutral-800"><svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg> Documents generated today</span>
+                    <span class="text-neutral-950 font-bold tabular-nums metric-value" data-metric="today">0</span>
+                </div>`;
+        }
+
+        function animateAll(stats, duration) {
+            METRICS_CONFIG.forEach(m => {
+                const el = document.querySelector(`[data-metric="${m.key}"]`);
+                if (el) animateValue(el, 0, stats.toolCounts[m.key] || 0, duration);
+            });
+            const countriesEl = document.querySelector('[data-metric="countries"]');
+            const todayEl = document.querySelector('[data-metric="today"]');
+            if (countriesEl) animateValue(countriesEl, 0, stats.countryCount, duration);
+            if (todayEl) animateValue(todayEl, 0, stats.todayCount, duration);
+        }
+
+        async function renderMetrics() {
+            try {
+                const stats = await fetchStats();
+                buildMetricsRows(stats);
+                animateAll(stats, 1500);
+                metricsUpdateTime.textContent = 'as of ' + new Date().toLocaleTimeString();
+                const total = Object.values(stats.toolCounts).reduce((s, v) => s + v, 0);
+                checkMilestones(total);
+            } catch (err) {
+                console.error('Metrics fetch failed:', err);
+                metricsGrid.innerHTML = '<div class="text-xs font-mono text-neutral-700 text-center py-2">cant reach the database. supabase creds probably fake.</div>';
+                metricsSummary.innerHTML = '';
+                metricsUpdateTime.textContent = 'Offline';
+            }
+        }
+
+        // ─── Shared Case Route Handling ───────────────────────────────────
+        async function loadSharedCase() {
+            const match = window.location.pathname.match(/^\/case\/([^/]+)\/?$/);
+            if (!match) return;
+            const caseId = match[1];
+            try {
+                const res = await fetch(`/api/case/${caseId}`);
+                const json = await res.json();
+                if (!res.ok || !json.data) throw new Error(json.error || 'Case not found');
+                const caseData = json.data;
+                activeModuleType = caseData.module_type;
+                activeDocument = caseData.document_content;
+                activePayload = {
+                    module_type: caseData.module_type,
+                    primary_selection: caseData.primary_selection,
+                    secondary_selection: caseData.secondary_selection,
+                };
+                shareableCard.innerHTML = activeDocument;
+                stampKind = 'filed';
+                stampRotation = -12 + Math.random() * 12;
+                applyStamp();
+                updateMetaForCase(caseData, `${window.location.origin}/case/${caseId}`);
+                switchView(rendererView);
+                showToast('case file loaded from the archives');
+            } catch (err) {
+                console.error('Failed to load shared case:', err);
+                showToast('case file not found');
+                resetMeta();
+                switchView(home);
+            }
+        }
+
+        // ─── Init ─────────────────────────────────────────────────────────
+        trackVisit('launchpad');
+        loadTiles();
+        renderMetrics();
+        renderDocket();
+        setInterval(renderMetrics, 60000);
+        loadSharedCase();
+    </script>
+</body>
+</html>
